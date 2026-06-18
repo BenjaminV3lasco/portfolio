@@ -1,10 +1,6 @@
 export const menuItems = [
   { id: "start", label: "START" },
-  { id: "projects", label: "PROJECTS" },
-  { id: "skills", label: "SKILLS" },
-  { id: "about", label: "ABOUT ME" },
-  { id: "contact", label: "CONTACT" },
-  { id: "cv", label: "DOWNLOAD CV" },
+  { id: "classic", label: "CLASSIC MODE" },
 ];
 
 export const sections = {
@@ -17,7 +13,7 @@ export const sections = {
   },
   projects: {
     label: "PROJECTS",
-    title: "MISSION LOG",
+    title: "MISSION SELECT",
     subtitle: "Selected work",
     body: "Projects are presented as missions. The idea is to later connect each mission to a live demo, GitHub repo and a detailed case study.",
     lines: [
@@ -29,7 +25,7 @@ export const sections = {
   },
   skills: {
     label: "SKILLS",
-    title: "SKILL STATS",
+    title: "PLAYER STATS",
     subtitle: "Current build",
     body: "A character-stat screen for your technical stack, split by frontend, backend, databases and tools.",
     lines: [
