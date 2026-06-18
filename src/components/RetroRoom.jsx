@@ -1,6 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import React from "react";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import * as THREE from "three";
 
 const wallMaterial = new THREE.MeshStandardMaterial({ color: "#5c5146", roughness: 1, flatShading: true });

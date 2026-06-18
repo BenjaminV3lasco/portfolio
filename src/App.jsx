@@ -1,6 +1,5 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import React from "react";
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { RetroRoom } from "./components/RetroRoom.jsx";
 import { menuItems, sections } from "./data/portfolio.js";
 import * as THREE from "three";
