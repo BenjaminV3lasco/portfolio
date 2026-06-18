@@ -277,6 +277,71 @@ h2 {
   font-weight: 800;
 }
 
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 2px solid rgba(99, 242, 138, 0.34);
+  border-radius: 8px;
+  background: rgba(10, 12, 13, 0.72);
+  color: #f2eadb;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.social-links a:hover {
+  border-color: rgba(255, 206, 99, 0.82);
+  color: #ffce63;
+  box-shadow: 0 0 18px rgba(99, 242, 138, 0.16);
+}
+
+.social-icon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid currentColor;
+  background: rgba(99, 242, 138, 0.08);
+  color: currentColor;
+  font-size: 0.66rem;
+  font-weight: 900;
+  line-height: 1;
+  image-rendering: pixelated;
+}
+
+.social-icon.github::before {
+  content: "GH";
+}
+
+.social-icon.linkedin::before {
+  content: "in";
+  font-size: 0.74rem;
+}
+
+.social-icon.email::before {
+  content: "@";
+  font-size: 0.82rem;
+}
+
+.social-icon::after {
+  position: absolute;
+  inset: 3px;
+  content: "";
+  border: 1px solid rgba(242, 234, 219, 0.16);
+}
+
 .main-menu,
 .section-tabs {
   display: flex;

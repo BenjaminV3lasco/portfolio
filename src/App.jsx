@@ -216,11 +216,7 @@ export default function App() {
           <h1>{currentSection.title}</h1>
           <h2>{currentSection.subtitle}</h2>
           <p>{currentSection.body}</p>
-          <ul>
-            {currentSection.lines.map((line) => (
-              <li key={line}>{line}</li>
-            ))}
-          </ul>
+          <SectionDetails section={currentSection} />
       </section>
       )}
 
@@ -251,11 +247,7 @@ export default function App() {
               <h2>{currentClassicSection.title}</h2>
               <p>{currentClassicSection.subtitle}</p>
               <p>{currentClassicSection.body}</p>
-              <ul>
-                {currentClassicSection.lines.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
+              <SectionDetails section={currentClassicSection} />
             </article>
           </div>
         </section>
@@ -288,6 +280,31 @@ export default function App() {
 
       <div className="crt-overlay" aria-hidden="true" />
     </main>
+  );
+}
+
+function SectionDetails({ section }) {
+  return (
+    <>
+      {section.lines.length > 0 && (
+        <ul>
+          {section.lines.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      )}
+
+      {section.links && (
+        <div className="social-links" aria-label={`${section.label} links`}>
+          {section.links.map((link) => (
+            <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+              <span className={`social-icon ${link.icon}`} aria-hidden="true" />
+              <span>{link.label}</span>
+            </a>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 

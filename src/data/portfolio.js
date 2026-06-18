@@ -46,8 +46,25 @@ export const sections = {
     label: "CONTACT",
     title: "CONTACT TERMINAL",
     subtitle: "Open channel",
-    body: "A terminal-style contact screen for email, GitHub, LinkedIn and a future message form.",
-    lines: ["Email: velascobenjamin14@gmail.com", "GitHub: @velascobenjamin14", "LinkedIn: Benjamin Velasco"],
+    body: "Choose a channel and open a direct line.",
+    lines: [],
+    links: [
+      {
+        label: "Email",
+        icon: "email",
+        href: "mailto:velascobenjamin14@gmail.com",
+      },
+      {
+        label: "GitHub",
+        icon: "github",
+        href: "https://github.com/BenjaminV3lasco",
+      },
+      {
+        label: "LinkedIn",
+        icon: "linkedin",
+        href: "https://www.linkedin.com/in/benjamín-velasco-7157b1253/",
+      },
+    ],
   },
   cv: {
     label: "CV",
