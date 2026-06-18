@@ -11,7 +11,7 @@ export default function App() {
   const [tooltip, setTooltip] = useState({ visible: false, label: "", x: 0, y: 0 });
   const [classicSection, setClassicSection] = useState("about");
   const [isMusicEnabled, setIsMusicEnabled] = useState(false);
-  const [audioStatus, setAudioStatus] = useState("MUSIC OFF");
+  const [audioStatus, setAudioStatus] = useState("MUSICA OFF");
   const audioRef = useRef(null);
   const audioContextRef = useRef(null);
 
@@ -121,7 +121,7 @@ export default function App() {
       oscillator.start(now);
       oscillator.stop(now + settings[2] + 0.02);
     } catch {
-      // Audio feedback is optional and should never block exploration.
+      // El feedback de audio es opcional y no debe bloquear la experiencia.
     }
   }
 
@@ -132,7 +132,7 @@ export default function App() {
     if (isMusicEnabled) {
       audio.pause();
       setIsMusicEnabled(false);
-      setAudioStatus("MUSIC OFF");
+      setAudioStatus("MUSICA OFF");
       return;
     }
 
@@ -140,9 +140,9 @@ export default function App() {
       audio.volume = 0.34;
       await audio.play();
       setIsMusicEnabled(true);
-      setAudioStatus("MUSIC ON");
+      setAudioStatus("MUSICA ON");
     } catch {
-      setAudioStatus("ADD MUSIC FILE");
+      setAudioStatus("AGREGAR MUSICA");
     }
   }
 
@@ -188,10 +188,10 @@ export default function App() {
       {(mode === "menu" || mode === "entering") && (
         <section className={`start-screen ${mode === "entering" ? "leaving" : ""}`} aria-label="Menu inicial">
           <div className="title-block">
-            <p className="eyebrow">Retro 3D portfolio</p>
-            <h1>RETRO 3D PORTFOLIO</h1>
+            <p className="eyebrow">Portfolio retro 3D</p>
+            <h1>PORTFOLIO 3D RETRO</h1>
             <p className="menu-subtitle">Benjamin Velasco</p>
-            <p className="press-start">PRESS START</p>
+            <p className="press-start">PRESIONA INICIAR</p>
           </div>
           <nav className="main-menu" aria-label="Menu del portfolio">
             {menuItems.map((item) => (
@@ -204,7 +204,7 @@ export default function App() {
       )}
 
       {mode === "explore" && !currentSection && (
-        <p className="explore-hint">Click objects to explore</p>
+        <p className="explore-hint">Hace click en los objetos para explorar</p>
       )}
 
       {mode === "explore" && currentSection && (
@@ -225,8 +225,8 @@ export default function App() {
           <button className="panel-close" type="button" onClick={() => setMode("menu")} aria-label="Cerrar panel">
             X
           </button>
-          <p className="eyebrow">Classic mode</p>
-          <h1>QUICK VIEW</h1>
+          <p className="eyebrow">Modo clasico</p>
+          <h1>VISTA RAPIDA</h1>
           <nav className="classic-tabs" aria-label="Secciones rapidas">
             {Object.entries(sections).map(([id, section]) => (
               <button
@@ -261,7 +261,7 @@ export default function App() {
 
       {mode === "explore" && (
         <button className="classic-toggle" type="button" onClick={() => setMode("classic")}>
-          CLASSIC MODE
+          MODO CLASICO
         </button>
       )}
 
@@ -295,7 +295,7 @@ function SectionDetails({ section }) {
       )}
 
       {section.links && (
-        <div className="social-links" aria-label={`${section.label} links`}>
+        <div className="social-links" aria-label={`Links de ${section.label}`}>
           {section.links.map((link) => (
             <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
               <span className={`social-icon ${link.icon}`} aria-hidden="true" />
