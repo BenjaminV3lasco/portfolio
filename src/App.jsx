@@ -188,9 +188,8 @@ export default function App() {
       {(mode === "menu" || mode === "entering") && (
         <section className={`start-screen ${mode === "entering" ? "leaving" : ""}`} aria-label="Menu inicial">
           <div className="title-block">
-            <p className="eyebrow">Portfolio retro 3D</p>
             <h1>PORTFOLIO 3D RETRO</h1>
-            <p className="menu-subtitle">Benjamín Velasco</p>
+            <p className="menu-subtitle">Benjamín Velasco  -  Full Stack Developer</p>
             <p className="press-start">PRESIONA INICIAR</p>
           </div>
           <nav className="main-menu" aria-label="Menu del portfolio">
@@ -413,15 +412,71 @@ function getSkillTone(level) {
 }
 
 function CameraRig({ mode }) {
-  const { camera } = useThree();
+  const { camera, size } = useThree();
   const target = useRef(new THREE.Vector3(0, 0.15, -2.05));
-  const menuPosition = useMemo(() => new THREE.Vector3(3.45, 1.55, 4.35), []);
-  const explorePosition = useMemo(() => new THREE.Vector3(2.8, 1.35, 3.75), []);
+
+  const cameraProfile = useMemo(() => {
+    const aspect = size.width / Math.max(size.height, 1);
+    const isMobile = size.width < 620;
+    const isTablet = size.width < 900;
+    const isNotebook = size.width < 1280;
+    const isWide = size.width >= 1600;
+
+    if (isMobile) {
+      return {
+        menu: new THREE.Vector3(4.8, 1.95, 6.35),
+        explore: new THREE.Vector3(4.3, 1.75, 5.65),
+        menuTarget: new THREE.Vector3(-0.15, 0.18, -2.15),
+        exploreTarget: new THREE.Vector3(-0.1, 0.34, -2.2),
+        fov: 62,
+      };
+    }
+
+    if (isTablet || aspect < 1.25) {
+      return {
+        menu: new THREE.Vector3(4.25, 1.8, 5.55),
+        explore: new THREE.Vector3(3.65, 1.55, 4.85),
+        menuTarget: new THREE.Vector3(-0.05, 0.16, -2.08),
+        exploreTarget: new THREE.Vector3(0, 0.34, -2.22),
+        fov: 58,
+      };
+    }
+
+    if (isNotebook) {
+      return {
+        menu: new THREE.Vector3(4.1, 1.72, 5.05),
+        explore: new THREE.Vector3(3.15, 1.42, 4.2),
+        menuTarget: new THREE.Vector3(0.24, 0.12, -2.0),
+        exploreTarget: new THREE.Vector3(0, 0.35, -2.26),
+        fov: 54,
+      };
+    }
+
+    if (isWide) {
+      return {
+        menu: new THREE.Vector3(3.2, 1.5, 4.1),
+        explore: new THREE.Vector3(2.65, 1.32, 3.58),
+        menuTarget: new THREE.Vector3(0, 0.15, -2.05),
+        exploreTarget: new THREE.Vector3(0, 0.35, -2.28),
+        fov: 48,
+      };
+    }
+
+    return {
+      menu: new THREE.Vector3(3.45, 1.55, 4.35),
+      explore: new THREE.Vector3(2.8, 1.35, 3.75),
+      menuTarget: new THREE.Vector3(0, 0.15, -2.05),
+      exploreTarget: new THREE.Vector3(0, 0.35, -2.28),
+      fov: 50,
+    };
+  }, [size.width, size.height]);
 
   useFrame(() => {
-    const destination = mode === "menu" ? menuPosition : explorePosition;
-    const lookTarget = mode === "menu" ? new THREE.Vector3(0, 0.15, -2.05) : new THREE.Vector3(0, 0.35, -2.28);
+    const destination = mode === "menu" ? cameraProfile.menu : cameraProfile.explore;
+    const lookTarget = mode === "menu" ? cameraProfile.menuTarget : cameraProfile.exploreTarget;
     camera.position.lerp(destination, mode === "entering" ? 0.035 : 0.08);
+    camera.fov = THREE.MathUtils.lerp(camera.fov, cameraProfile.fov, 0.08);
+    camera.updateProjectionMatrix();
     target.current.lerp(lookTarget, 0.08);
     camera.lookAt(target.current);
   });
