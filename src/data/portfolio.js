@@ -152,7 +152,7 @@ export const sections = {
       {
         label: "LinkedIn",
         icon: "linkedin",
-        href: "https://www.linkedin.com/in/benjamin-velasco-7157b1253/",
+        href: "https://www.linkedin.com/in/benjamín-velasco-7157b1253/",
       },
     ],
   },
