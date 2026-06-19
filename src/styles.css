@@ -128,7 +128,25 @@ h2 {
 }
 
 .projects-panel {
-  width: min(860px, calc(100vw - 36px));
+  top: clamp(14px, 3vw, 28px);
+  width: min(1180px, calc(100vw - 36px));
+  max-height: calc(100vh - 36px);
+  overflow-y: hidden;
+}
+
+.projects-panel h1 {
+  margin-bottom: 10px;
+  font-size: clamp(2.2rem, 3.4vw, 3.7rem);
+}
+
+.projects-panel h2 {
+  margin-bottom: 10px;
+}
+
+.projects-panel > p:not(.eyebrow) {
+  max-width: 760px;
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .panel-close {
@@ -361,6 +379,12 @@ h2 {
   margin-top: 18px;
 }
 
+.projects-panel .project-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
 .project-card {
   display: grid;
   min-height: 100%;
@@ -382,6 +406,10 @@ h2 {
   border-bottom: 2px solid rgba(242, 234, 219, 0.14);
 }
 
+.projects-panel .project-preview {
+  min-height: 112px;
+}
+
 .project-preview > span {
   position: relative;
   z-index: 1;
@@ -396,7 +424,8 @@ h2 {
   font-weight: 900;
 }
 
-.project-preview img {
+.project-preview img,
+.project-preview video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -442,6 +471,11 @@ h2 {
   padding: 14px;
 }
 
+.projects-panel .project-content {
+  gap: 9px;
+  padding: 12px;
+}
+
 .project-heading {
   display: flex;
   justify-content: space-between;
@@ -470,10 +504,20 @@ h2 {
   line-height: 1.45;
 }
 
+.projects-panel .project-card p {
+  font-size: 0.8rem;
+  line-height: 1.38;
+}
+
 .tech-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.projects-panel .tech-tags,
+.projects-panel .project-actions {
+  gap: 6px;
 }
 
 .tech-tags span {
@@ -485,6 +529,12 @@ h2 {
   color: #f2eadb;
   font-size: 0.68rem;
   font-weight: 900;
+}
+
+.projects-panel .tech-tags span {
+  min-height: 24px;
+  padding: 5px 7px;
+  font-size: 0.62rem;
 }
 
 .project-actions {
@@ -511,6 +561,13 @@ h2 {
   text-decoration: none;
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.projects-panel .project-actions a,
+.projects-panel .project-actions button {
+  min-height: 30px;
+  padding: 0 8px;
+  font-size: 0.66rem;
 }
 
 .project-actions .social-icon {
@@ -837,6 +894,14 @@ h2 {
   }
 
   .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .projects-panel {
+    overflow-y: auto;
+  }
+
+  .projects-panel .project-grid {
     grid-template-columns: 1fr;
   }
 }
