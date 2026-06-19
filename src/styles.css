@@ -346,6 +346,112 @@ h2 {
   border: 1px solid rgba(242, 234, 219, 0.16);
 }
 
+.skill-groups {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.skill-group {
+  border: 2px solid rgba(242, 234, 219, 0.14);
+  border-radius: 8px;
+  background: rgba(10, 12, 13, 0.38);
+  overflow: hidden;
+}
+
+.skill-group summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 42px;
+  padding: 0 12px;
+  color: #ffce63;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  list-style: none;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.skill-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.skill-group summary::before {
+  content: "+";
+  color: #63f28a;
+}
+
+.skill-group[open] summary::before {
+  content: "-";
+}
+
+.skill-group summary span:first-child {
+  margin-right: auto;
+}
+
+.skill-group summary span:last-child {
+  color: #d0c3ae;
+  font-size: 0.7rem;
+}
+
+.skill-group-content {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.skill-row {
+  display: grid;
+  gap: 6px;
+}
+
+.skill-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #f2eadb;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.skill-track {
+  height: 12px;
+  border: 2px solid rgba(242, 234, 219, 0.18);
+  border-radius: 4px;
+  background: rgba(10, 12, 13, 0.74);
+  overflow: hidden;
+}
+
+.skill-fill {
+  display: block;
+  height: 100%;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.skill-fill.high {
+  background: #63f28a;
+  color: #63f28a;
+}
+
+.skill-fill.mid {
+  background: #ffce63;
+  color: #ffce63;
+}
+
+.skill-fill.low {
+  background: #d97e39;
+  color: #d97e39;
+}
+
+.skill-fill.danger {
+  background: #ff5a5f;
+  color: #ff5a5f;
+}
+
 .main-menu,
 .section-tabs {
   display: flex;

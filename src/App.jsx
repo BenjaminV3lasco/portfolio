@@ -215,7 +215,7 @@ export default function App() {
           <p className="eyebrow">{currentSection.label}</p>
           <h1>{currentSection.title}</h1>
           <h2>{currentSection.subtitle}</h2>
-          <p>{currentSection.body}</p>
+          {currentSection.body && <p>{currentSection.body}</p>}
           <SectionDetails section={currentSection} />
       </section>
       )}
@@ -246,7 +246,7 @@ export default function App() {
             <article>
               <h2>{currentClassicSection.title}</h2>
               <p>{currentClassicSection.subtitle}</p>
-              <p>{currentClassicSection.body}</p>
+              {currentClassicSection.body && <p>{currentClassicSection.body}</p>}
               <SectionDetails section={currentClassicSection} />
             </article>
           </div>
@@ -310,8 +310,41 @@ function SectionDetails({ section }) {
           ))}
         </div>
       )}
+
+      {section.skillGroups && (
+        <div className="skill-groups" aria-label="Habilidades tecnicas">
+          {section.skillGroups.map((group) => (
+            <details className="skill-group" key={group.title}>
+              <summary>
+                <span>{group.title}</span>
+                <span>{group.items.length} items</span>
+              </summary>
+              <div className="skill-group-content">
+                {group.items.map((skill) => (
+                  <div className="skill-row" key={skill.name}>
+                    <div className="skill-meta">
+                      <span>{skill.name}</span>
+                      <span>{skill.level}%</span>
+                    </div>
+                    <div className="skill-track" aria-hidden="true">
+                      <span className={`skill-fill ${getSkillTone(skill.level)}`} style={{ width: `${skill.level}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
     </>
   );
+}
+
+function getSkillTone(level) {
+  if (level >= 70) return "high";
+  if (level >= 50) return "mid";
+  if (level >= 25) return "low";
+  return "danger";
 }
 
 function CameraRig({ mode }) {

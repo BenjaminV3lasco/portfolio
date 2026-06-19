@@ -27,12 +27,52 @@ export const sections = {
     label: "HABILIDADES",
     title: "ESTADISTICAS",
     subtitle: "Version actual",
-    body: "Una pantalla de estadisticas para mostrar el stack tecnico, separado por frontend, backend, bases de datos y herramientas.",
-    lines: [
-      "Frontend        ########.. 80%",
-      "Backend         #######... 70%",
-      "Bases de datos  ######.... 60%",
-      "Resolucion      ########.. 80%",
+    body: "",
+    lines: [],
+    skillGroups: [
+      {
+        title: "Lenguajes",
+        items: [
+          { name: "JavaScript", level: 60 },
+          { name: "TypeScript", level: 40 },
+          { name: "Java", level: 45 },
+          { name: "C", level: 30 },
+        ],
+      },
+      {
+        title: "Frontend y estilos",
+        items: [
+          { name: "HTML", level: 65 },
+          { name: "CSS", level: 55 },
+          { name: "Tailwind CSS", level: 45 },
+        ],
+      },
+      {
+        title: "Frameworks y librerias",
+        items: [
+          { name: "React", level: 55 },
+          { name: "Next.js", level: 40 },
+        ],
+      },
+      {
+        title: "Stack de trabajo",
+        items: [
+          { name: "T3 Stack", level: 35 },
+        ],
+      },
+      {
+        title: "Base de datos",
+        items: [
+          { name: "MySQL", level: 45 },
+          { name: "PostgreSQL", level: 40 },
+        ],
+      },
+      {
+        title: "Idiomas",
+        items: [
+          { name: "Ingles", level: 60 },
+        ],
+      },
     ],
   },
   education: {
