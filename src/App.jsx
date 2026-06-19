@@ -297,7 +297,13 @@ function SectionDetails({ section }) {
       {section.links && (
         <div className="social-links" aria-label={`Links de ${section.label}`}>
           {section.links.map((link) => (
-            <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+            <a
+              download={link.download}
+              href={link.href}
+              key={link.href}
+              rel={link.download ? undefined : "noreferrer"}
+              target={link.download ? undefined : "_blank"}
+            >
               <span className={`social-icon ${link.icon}`} aria-hidden="true" />
               <span>{link.label}</span>
             </a>

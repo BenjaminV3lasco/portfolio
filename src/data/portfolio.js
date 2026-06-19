@@ -70,7 +70,15 @@ export const sections = {
     label: "CV",
     title: "ARCHIVO CV",
     subtitle: "Curriculum vitae",
-    body: "Esta seccion va a funcionar como acceso directo para descargar mi CV cuando agregue el archivo PDF al proyecto.",
-    lines: ["Accion: Descargar CV", "Formato: PDF", "Estado: Archivo pendiente"],
+    body: "Descarga mi CV en formato PDF para ver mi informacion profesional completa.",
+    lines: [],
+    links: [
+      {
+        label: "Descargar CV",
+        icon: "cv",
+        href: "/cv/benjamin-velasco-cv.pdf",
+        download: "benjamin-velasco-cv.pdf",
+      },
+    ],
   },
 };
