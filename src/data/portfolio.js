@@ -1,41 +1,41 @@
 export const menuItems = [
   { id: "start", label: "INICIAR" },
-  { id: "classic", label: "MODO CLASICO" },
+  { id: "classic", label: "MODO CLÁSICO" },
 ];
 
 export const sections = {
   about: {
     label: "SOBRE MI",
     title: "PERFIL DEL PERSONAJE",
-    subtitle: "Nombre: Leonelo Benjamin Velasco Monticone",
-    body: "Analista Universitario en Sistemas y estudiante avanzado de Ingenieria en Sistemas de Informacion. Actualmente curso el ultimo ano de la carrera y realizo mi Practica Profesional Supervisada en Kaizen Software, donde participo en el desarrollo de Cenprofar, una aplicacion real de entorno profesional. Me interesa crear sistemas web utiles, claros y bien pensados. Me gusta aprender construyendo, trabajar en equipo y mejorar mis habilidades tecnicas mientras participo en proyectos reales.",
+    subtitle: "Nombre: Leonelo Benjamín Velasco Monticone",
+    body: "Analista Universitario en Sistemas y estudiante avanzado de Ingeniería en Sistemas de Información. Actualmente curso el último año de la carrera y realizo mi Práctica Profesional Supervisada en Kaizen Software, donde participo en el desarrollo de Cenprofar, una aplicación real de entorno profesional. Me interesa crear sistemas web útiles, claros y bien pensados. Me gusta aprender construyendo, trabajar en equipo y mejorar mis habilidades técnicas mientras participo en proyectos reales.",
     lines: [],
     facts: [
-      { label: "Carrera", value: "Ingenieria en Sistemas de Informacion" },
-      { label: "Titulo intermedio", value: "Analista Universitario en Sistemas" },
+      { label: "Carrera", value: "Ingeniería en Sistemas de Información" },
+      { label: "Título intermedio", value: "Analista Universitario en Sistemas" },
       { label: "Experiencia actual", value: "PPS en Kaizen Software" },
       { label: "Proyecto", value: "Cenprofar" },
       { label: "Enfoque", value: "Desarrollo web full stack" },
       { label: "Stack actual", value: "React, Next.js, TypeScript, Tailwind, T3" },
-      { label: "Ubicacion: Argentina", value: "San Luis, Villa Mercedes" },
+      { label: "Ubicación", value: "San Luis, Villa Mercedes, Argentina" },
     ],
   },
   projects: {
     label: "PROYECTOS",
-    title: "SELECCION DE MISION",
+    title: "SELECCIÓN DE MISIÓN",
     subtitle: "Trabajos seleccionados",
-    body: "Los proyectos se presentan como misiones. La idea es conectar cada una con una demo, un repositorio de GitHub y una explicacion mas detallada.",
+    body: "Los proyectos se presentan como misiones. La idea es conectar cada una con una demo, un repositorio de GitHub y una explicación más detallada.",
     lines: [
-      "MISION 01 - Sistema de gestion de tarjetas",
-      "MISION 02 - Panel academico",
-      "MISION 03 - Gestion de API REST",
-      "MISION 04 - Portfolio retro 3D",
+      "MISIÓN 01 - Sistema de gestión de tarjetas",
+      "MISIÓN 02 - Panel académico",
+      "MISIÓN 03 - Gestión de API REST",
+      "MISIÓN 04 - Portfolio retro 3D",
     ],
   },
   skills: {
     label: "HABILIDADES",
-    title: "ESTADISTICAS",
-    subtitle: "Version actual",
+    title: "ESTADÍSTICAS",
+    subtitle: "Versión actual",
     body: "",
     lines: [],
     skillGroups: [
@@ -57,7 +57,7 @@ export const sections = {
         ],
       },
       {
-        title: "Frameworks y librerias",
+        title: "Frameworks y librerías",
         items: [
           { name: "React", level: 55 },
           { name: "Next.js", level: 40 },
@@ -79,23 +79,23 @@ export const sections = {
       {
         title: "Idiomas",
         items: [
-          { name: "Ingles", level: 60 },
+          { name: "Inglés", level: 60 },
         ],
       },
     ],
   },
   education: {
-    label: "EDUCACION",
-    title: "ARCHIVO ACADEMICO",
-    subtitle: "Ingenieria en Sistemas de Informacion",
-    body: "Esta seccion representa mi camino academico, como una zona del mapa dedicada a la formacion y al aprendizaje.",
-    lines: ["Estado: En curso", "Enfoque: Sistemas web", "Intereses: Bases de datos, ingenieria de software, IA"],
+    label: "EDUCACIÓN",
+    title: "ARCHIVO ACADÉMICO",
+    subtitle: "Ingeniería en Sistemas de Información",
+    body: "Esta sección representa mi camino académico, como una zona del mapa dedicada a la formación y al aprendizaje.",
+    lines: ["Estado: En curso", "Enfoque: Sistemas web", "Intereses: Bases de datos, ingeniería de software, IA"],
   },
   contact: {
     label: "CONTACTO",
     title: "TERMINAL DE CONTACTO",
     subtitle: "Canal abierto",
-    body: "Elegir un canal para abrir una linea directa.",
+    body: "Elegir un canal para abrir una línea directa.",
     lines: [],
     links: [
       {
@@ -118,8 +118,8 @@ export const sections = {
   cv: {
     label: "CV",
     title: "ARCHIVO CV",
-    subtitle: "Curriculum vitae",
-    body: "Descarga mi CV en formato PDF para ver mi informacion profesional completa.",
+    subtitle: "Currículum vitae",
+    body: "Descarga mi CV en formato PDF para ver mi información profesional completa.",
     lines: [],
     links: [
       {

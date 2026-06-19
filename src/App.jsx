@@ -11,7 +11,7 @@ export default function App() {
   const [tooltip, setTooltip] = useState({ visible: false, label: "", x: 0, y: 0 });
   const [classicSection, setClassicSection] = useState("about");
   const [isMusicEnabled, setIsMusicEnabled] = useState(false);
-  const [audioStatus, setAudioStatus] = useState("MUSICA OFF");
+  const [audioStatus, setAudioStatus] = useState("MÚSICA OFF");
   const audioRef = useRef(null);
   const audioContextRef = useRef(null);
 
@@ -132,7 +132,7 @@ export default function App() {
     if (isMusicEnabled) {
       audio.pause();
       setIsMusicEnabled(false);
-      setAudioStatus("MUSICA OFF");
+      setAudioStatus("MÚSICA OFF");
       return;
     }
 
@@ -140,9 +140,9 @@ export default function App() {
       audio.volume = 0.34;
       await audio.play();
       setIsMusicEnabled(true);
-      setAudioStatus("MUSICA ON");
+      setAudioStatus("MÚSICA ON");
     } catch {
-      setAudioStatus("AGREGAR MUSICA");
+      setAudioStatus("AGREGAR MÚSICA");
     }
   }
 
@@ -190,7 +190,7 @@ export default function App() {
           <div className="title-block">
             <p className="eyebrow">Portfolio retro 3D</p>
             <h1>PORTFOLIO 3D RETRO</h1>
-            <p className="menu-subtitle">Benjamin Velasco</p>
+            <p className="menu-subtitle">Benjamín Velasco</p>
             <p className="press-start">PRESIONA INICIAR</p>
           </div>
           <nav className="main-menu" aria-label="Menu del portfolio">
@@ -204,7 +204,7 @@ export default function App() {
       )}
 
       {mode === "explore" && !currentSection && (
-        <p className="explore-hint">Hace click en los objetos para explorar</p>
+        <p className="explore-hint">Hacé clic en los objetos para explorar</p>
       )}
 
       {mode === "explore" && currentSection && (
@@ -225,9 +225,9 @@ export default function App() {
           <button className="panel-close" type="button" onClick={() => setMode("menu")} aria-label="Cerrar panel">
             X
           </button>
-          <p className="eyebrow">Modo clasico</p>
-          <h1>VISTA RAPIDA</h1>
-          <nav className="classic-tabs" aria-label="Secciones rapidas">
+          <p className="eyebrow">Modo clásico</p>
+          <h1>VISTA RÁPIDA</h1>
+          <nav className="classic-tabs" aria-label="Secciones rápidas">
             {Object.entries(sections).map(([id, section]) => (
               <button
                 className={id === classicSection ? "active" : ""}
@@ -261,7 +261,7 @@ export default function App() {
 
       {mode === "explore" && (
         <button className="classic-toggle" type="button" onClick={() => setMode("classic")}>
-          MODO CLASICO
+          MODO CLÁSICO
         </button>
       )}
 
@@ -269,7 +269,7 @@ export default function App() {
         className={`sound-toggle ${isMusicEnabled ? "playing" : ""}`}
         type="button"
         onClick={toggleMusic}
-        aria-label={isMusicEnabled ? "Desactivar musica" : "Activar musica"}
+        aria-label={isMusicEnabled ? "Desactivar música" : "Activar música"}
         title={audioStatus}
       >
         <span className="speaker-icon" aria-hidden="true">
@@ -295,7 +295,7 @@ function SectionDetails({ section }) {
       )}
 
       {section.links && (
-        <div className="social-links" aria-label={`Links de ${section.label}`}>
+        <div className="social-links" aria-label={`Enlaces de ${section.label}`}>
           {section.links.map((link) => (
             <a
               download={link.download}
@@ -323,12 +323,12 @@ function SectionDetails({ section }) {
       )}
 
       {section.skillGroups && (
-        <div className="skill-groups" aria-label="Habilidades tecnicas">
+        <div className="skill-groups" aria-label="Habilidades técnicas">
           {section.skillGroups.map((group) => (
             <details className="skill-group" key={group.title}>
               <summary>
                 <span>{group.title}</span>
-                <span>{group.items.length} items</span>
+                <span>{group.items.length} ítems</span>
               </summary>
               <div className="skill-group-content">
                 {group.items.map((skill) => (
