@@ -72,13 +72,13 @@ export default function App() {
     playSfx("close");
   }
 
-  function setObjectHover(sectionId, event) {
+  function setObjectHover(sectionId, event, labelOverride) {
     if (!canExploreObjects) return;
     const section = sections[sectionId];
     setHoveredSection(sectionId);
     setTooltip({
       visible: true,
-      label: section?.label ?? "",
+      label: labelOverride ?? section?.label ?? "",
       x: event?.clientX ?? 0,
       y: event?.clientY ?? 0,
     });
@@ -170,16 +170,17 @@ export default function App() {
       >
         <color attach="background" args={["#171419"]} />
         <fog attach="fog" args={["#171419", 5, 13]} />
-        <ambientLight intensity={0.68} />
+        <ambientLight intensity={0.6} />
         <directionalLight
           castShadow
-          intensity={1.65}
+          intensity={1.45}
           position={[3.2, 5.2, 3.4]}
           shadow-mapSize={[1024, 1024]}
         />
-        <pointLight color="#63f28a" intensity={12} position={[-2.7, 2.15, -2.2]} distance={4.8} />
-        <pointLight color="#75ff9d" intensity={24} position={[0, 0.82, -2.25]} distance={2.65} />
-        <pointLight color="#ffce63" intensity={4.5} position={[2.5, 1.7, 0.8]} distance={4.2} />
+        <pointLight color="#63f28a" intensity={10} position={[-2.7, 2.15, -2.2]} distance={4.8} />
+        <pointLight color="#75ff9d" intensity={30} position={[0, 0.82, -2.25]} distance={2.85} />
+        <pointLight color="#9dffb5" intensity={3} position={[-0.34, 2.58, -3.42]} distance={3.2} />
+        <pointLight color="#ffce63" intensity={3.4} position={[2.5, 1.7, 0.8]} distance={4.2} />
 
         <Suspense fallback={null}>
           <CameraRig mode={mode} />
@@ -408,15 +409,7 @@ function SectionDetails({ section }) {
               </summary>
               <div className="skill-group-content">
                 {group.items.map((skill) => (
-                  <div className="skill-row" key={skill.name}>
-                    <div className="skill-meta">
-                      <span>{skill.name}</span>
-                      <span>{skill.level}%</span>
-                    </div>
-                    <div className="skill-track" aria-hidden="true">
-                      <span className={`skill-fill ${getSkillTone(skill.level)}`} style={{ width: `${skill.level}%` }} />
-                    </div>
-                  </div>
+                  <span className="skill-chip" key={skill.name}>{skill.name}</span>
                 ))}
               </div>
             </details>
@@ -425,13 +418,6 @@ function SectionDetails({ section }) {
       )}
     </>
   );
-}
-
-function getSkillTone(level) {
-  if (level >= 70) return "high";
-  if (level >= 50) return "mid";
-  if (level >= 25) return "low";
-  return "danger";
 }
 
 function CameraRig({ mode }) {

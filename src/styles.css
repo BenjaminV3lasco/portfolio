@@ -201,15 +201,16 @@ h2 {
   bottom: clamp(18px, 4vw, 42px);
   margin: 0;
   transform: translateX(-50%);
-  padding: 10px 14px;
-  border: 2px solid rgba(242, 234, 219, 0.16);
+  padding: 10px 15px;
+  border: 2px solid rgba(99, 242, 138, 0.2);
   border-radius: 8px;
-  background: rgba(18, 18, 22, 0.72);
-  color: #d0c3ae;
+  background: rgba(10, 12, 13, 0.78);
+  color: #e6ddca;
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 0 14px rgba(99, 242, 138, 0.1);
+  backdrop-filter: blur(12px);
 }
 
 .object-tooltip {
@@ -242,6 +243,18 @@ h2 {
   font-weight: 800;
   cursor: pointer;
   backdrop-filter: blur(12px);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.classic-toggle:hover {
+  border-color: rgba(99, 242, 138, 0.78);
+  color: #63f28a;
+  box-shadow: 0 0 16px rgba(99, 242, 138, 0.14);
+  transform: translateY(-2px);
 }
 
 .classic-list {
@@ -678,58 +691,24 @@ h2 {
 }
 
 .skill-group-content {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   padding: 0 12px 12px;
 }
 
-.skill-row {
-  display: grid;
-  gap: 6px;
-}
-
-.skill-meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border: 2px solid rgba(99, 242, 138, 0.22);
+  border-radius: 6px;
+  background: rgba(10, 12, 13, 0.56);
   color: #f2eadb;
-  font-size: 0.82rem;
-  font-weight: 800;
+  font-size: 0.76rem;
+  font-weight: 900;
   text-transform: uppercase;
-}
-
-.skill-track {
-  height: 12px;
-  border: 2px solid rgba(242, 234, 219, 0.18);
-  border-radius: 4px;
-  background: rgba(10, 12, 13, 0.74);
-  overflow: hidden;
-}
-
-.skill-fill {
-  display: block;
-  height: 100%;
-  box-shadow: 0 0 12px currentColor;
-}
-
-.skill-fill.high {
-  background: #63f28a;
-  color: #63f28a;
-}
-
-.skill-fill.mid {
-  background: #ffce63;
-  color: #ffce63;
-}
-
-.skill-fill.low {
-  background: #d97e39;
-  color: #d97e39;
-}
-
-.skill-fill.danger {
-  background: #ff5a5f;
-  color: #ff5a5f;
 }
 
 .main-menu,
@@ -757,6 +736,11 @@ h2 {
   text-align: left;
   cursor: pointer;
   backdrop-filter: blur(12px);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
 .main-menu button:hover,
@@ -764,6 +748,14 @@ h2 {
   border-color: rgba(255, 206, 99, 0.78);
   background: #ffce63;
   color: #18130c;
+}
+
+.main-menu button:hover {
+  border-color: rgba(99, 242, 138, 0.9);
+  background: rgba(18, 18, 22, 0.86);
+  color: #63f28a;
+  box-shadow: 0 0 18px rgba(99, 242, 138, 0.22);
+  transform: translateX(4px) scale(1.015);
 }
 
 .sound-toggle {
@@ -785,12 +777,22 @@ h2 {
   letter-spacing: 0;
   cursor: pointer;
   backdrop-filter: blur(12px);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
 .sound-toggle:hover,
 .sound-toggle.playing {
   border-color: rgba(99, 242, 138, 0.78);
   color: #63f28a;
+}
+
+.sound-toggle:hover {
+  box-shadow: 0 0 16px rgba(99, 242, 138, 0.14);
+  transform: translateY(-2px);
 }
 
 .speaker-icon {
@@ -839,9 +841,11 @@ h2 {
 }
 
 .press-start {
-  color: #ffce63;
+  color: #f2eadb;
   font-size: clamp(1rem, 2.3vw, 1.35rem);
-  text-shadow: 0 0 10px rgba(255, 206, 99, 0.45);
+  text-shadow:
+    2px 2px 0 #18110f,
+    0 0 8px rgba(255, 206, 99, 0.28);
   animation: soft-blink 1.35s ease-in-out infinite;
 }
 
@@ -866,8 +870,11 @@ h2 {
 
 @keyframes soft-blink {
   50% {
-    opacity: 0.38;
-    text-shadow: 0 0 10px rgba(255, 206, 99, 0.55);
+    opacity: 0.5;
+    color: #ffe3a3;
+    text-shadow:
+      2px 2px 0 #18110f,
+      0 0 10px rgba(255, 206, 99, 0.45);
   }
 }
 

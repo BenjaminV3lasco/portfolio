@@ -1,9 +1,9 @@
 import { useFrame } from "@react-three/fiber";
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import * as THREE from "three";
 
 const wallMaterial = new THREE.MeshStandardMaterial({ color: "#5c5146", roughness: 1, flatShading: true });
-const floorMaterial = new THREE.MeshStandardMaterial({ color: "#2d2725", roughness: 1, flatShading: true });
+const floorMaterial = new THREE.MeshStandardMaterial({ color: "#332c29", roughness: 1, flatShading: true });
 const woodMaterial = new THREE.MeshStandardMaterial({ color: "#6c4a2e", roughness: 0.9, flatShading: true });
 const plasticMaterial = new THREE.MeshStandardMaterial({ color: "#c7bda7", roughness: 0.75, flatShading: true });
 const darkMaterial = new THREE.MeshStandardMaterial({ color: "#15161a", roughness: 0.8, flatShading: true });
@@ -57,6 +57,14 @@ export function RetroRoom({
         onSelectSection={onSelectSection}
         onUnhoverSection={onUnhoverSection}
       />
+      <ProfileCard
+        activeSection={activeSection}
+        hoveredSection={hoveredSection}
+        onHoverSection={onHoverSection}
+        onMovePointer={onMovePointer}
+        onSelectSection={onSelectSection}
+        onUnhoverSection={onUnhoverSection}
+      />
       <Phone
         activeSection={activeSection}
         hoveredSection={hoveredSection}
@@ -73,14 +81,7 @@ export function RetroRoom({
         onSelectSection={onSelectSection}
         onUnhoverSection={onUnhoverSection}
       />
-      <Door
-        activeSection={activeSection}
-        hoveredSection={hoveredSection}
-        onHoverSection={onHoverSection}
-        onMovePointer={onMovePointer}
-        onSelectSection={onSelectSection}
-        onUnhoverSection={onUnhoverSection}
-      />
+      <Door />
     </group>
   );
 }
@@ -91,6 +92,14 @@ function RoomShell() {
       <mesh receiveShadow position={[0, -0.04, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[7.6, 7.6, 4, 4]} />
         <primitive object={floorMaterial} attach="material" />
+      </mesh>
+      <mesh position={[-0.18, -0.032, -2.12]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[1.72, 16]} />
+        <meshBasicMaterial color="#63f28a" transparent opacity={0.055} depthWrite={false} />
+      </mesh>
+      <mesh position={[-0.04, -0.031, -2.3]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.82, 12]} />
+        <meshBasicMaterial color="#9dffb5" transparent opacity={0.045} depthWrite={false} />
       </mesh>
       <mesh receiveShadow position={[0, 1.8, -3.75]}>
         <boxGeometry args={[7.6, 3.7, 0.12, 4, 2, 1]} />
@@ -108,8 +117,64 @@ function RoomShell() {
         <boxGeometry args={[0.44, 0.18, 0.12]} />
         <meshStandardMaterial color="#253b32" emissive="#234c32" emissiveIntensity={0.5} roughness={0.8} flatShading />
       </mesh>
+      <WallLight />
+      <ExitSign />
       <LeftWallSet />
     </group>
+  );
+}
+
+function WallLight() {
+  return (
+    <group position={[-0.34, 2.68, -3.66]}>
+      <mesh castShadow>
+        <boxGeometry args={[0.66, 0.12, 0.08]} />
+        <meshStandardMaterial color="#1d2520" roughness={0.82} flatShading />
+      </mesh>
+      <mesh position={[0, 0, 0.055]}>
+        <boxGeometry args={[0.5, 0.045, 0.035]} />
+        <meshStandardMaterial color="#9dffb5" emissive="#2f7d45" emissiveIntensity={0.45} roughness={0.72} flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function ExitSign() {
+  return (
+    <group position={[3.08, 2.28, -3.66]}>
+      <mesh castShadow>
+        <boxGeometry args={[0.62, 0.24, 0.06]} />
+        <meshStandardMaterial color="#18231e" roughness={0.86} flatShading />
+      </mesh>
+      <LabelPlane text="EXIT" color="#63f28a" width={0.44} height={0.14} position={[0, 0, 0.04]} />
+    </group>
+  );
+}
+
+function LabelPlane({ color = "#f2eadb", height, position, rotation = [0, 0, 0], text, width }) {
+  const texture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 96;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = color;
+    context.font = "900 58px Trebuchet MS, Arial, sans-serif";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.fillText(text, canvas.width / 2, canvas.height / 2 + 2);
+
+    const labelTexture = new THREE.CanvasTexture(canvas);
+    labelTexture.magFilter = THREE.NearestFilter;
+    labelTexture.minFilter = THREE.NearestFilter;
+    return labelTexture;
+  }, [color, text]);
+
+  return (
+    <mesh position={position} rotation={rotation}>
+      <planeGeometry args={[width, height]} />
+      <meshBasicMaterial map={texture} transparent />
+    </mesh>
   );
 }
 
@@ -132,16 +197,16 @@ function LeftWallSet() {
         <boxGeometry args={[0.78, 0.06, 0.035]} />
         <meshStandardMaterial color="#30495f" roughness={0.85} flatShading />
       </mesh>
-      <mesh position={[0.6, 1.86, 0.12]}>
-        <boxGeometry args={[0.18, 0.28, 0.05]} />
+      <mesh position={[0.57, 1.86, 0.12]}>
+        <boxGeometry args={[0.16, 0.28, 0.05]} />
         <meshStandardMaterial color="#5d6674" roughness={0.9} flatShading />
       </mesh>
-      <mesh position={[0.88, 1.95, 0.12]}>
-        <boxGeometry args={[0.2, 0.42, 0.05]} />
+      <mesh position={[0.86, 1.95, 0.12]}>
+        <boxGeometry args={[0.17, 0.42, 0.05]} />
         <meshStandardMaterial color="#7b715e" roughness={0.9} flatShading />
       </mesh>
-      <mesh position={[1.16, 1.88, 0.12]}>
-        <boxGeometry args={[0.24, 0.32, 0.05]} />
+      <mesh position={[1.15, 1.88, 0.12]}>
+        <boxGeometry args={[0.2, 0.32, 0.05]} />
         <meshStandardMaterial color="#55705d" roughness={0.9} flatShading />
       </mesh>
       <mesh castShadow position={[-1.62, 1.52, 0.08]}>
@@ -523,9 +588,26 @@ function Whiteboard({ activeSection, hoveredSection, onHoverSection, onMovePoint
         <boxGeometry args={[1.65, 0.08, 0.08]} />
         <primitive object={darkMaterial} attach="material" />
       </mesh>
+      <mesh position={[0, 0.4, 0.09]}>
+        <boxGeometry args={[1.18, 0.08, 0.035]} />
+        <meshStandardMaterial color="#273d39" roughness={0.85} flatShading />
+      </mesh>
+      <LabelPlane text="STATS" color="#63f28a" width={0.42} height={0.1} position={[0, 0.4, 0.115]} />
       <SkillBar y={0.26} width={0.82} color="#63f28a" />
       <SkillBar y={0.08} width={0.62} color="#ffce63" />
       <SkillBar y={-0.1} width={0.72} color="#8fb9ff" />
+      <mesh position={[0.58, 0.24, 0.09]}>
+        <boxGeometry args={[0.12, 0.18, 0.035]} />
+        <meshStandardMaterial color="#63f28a" emissive="#174b27" emissiveIntensity={0.12} roughness={0.8} flatShading />
+      </mesh>
+      <mesh position={[0.58, 0.02, 0.09]}>
+        <boxGeometry args={[0.12, 0.28, 0.035]} />
+        <meshStandardMaterial color="#ffce63" emissive="#4a2d12" emissiveIntensity={0.1} roughness={0.8} flatShading />
+      </mesh>
+      <mesh position={[0.58, -0.22, 0.09]}>
+        <boxGeometry args={[0.12, 0.2, 0.035]} />
+        <meshStandardMaterial color="#8fb9ff" emissive="#1a2f4c" emissiveIntensity={0.1} roughness={0.8} flatShading />
+      </mesh>
       <mesh position={[-0.54, -0.3, 0.09]}>
         <boxGeometry args={[0.28, 0.2, 0.035]} />
         <meshStandardMaterial color="#d7b357" roughness={0.8} flatShading />
@@ -666,8 +748,8 @@ function Phone({ activeSection, hoveredSection, onHoverSection, onMovePointer, o
 
   return (
     <group
-      position={[-0.98, 1.015, -2.42]}
-      rotation={[0, 0.12, 0]}
+      position={[-1.08, 1.02, -2.4]}
+      rotation={[0, 0.08, 0]}
       scale={isHovered ? 1.08 : 1}
       onClick={(event) => {
         event.stopPropagation();
@@ -681,30 +763,66 @@ function Phone({ activeSection, hoveredSection, onHoverSection, onMovePointer, o
       }}
     >
       <mesh castShadow position={[0, 0, 0]}>
-        <boxGeometry args={[0.58, 0.16, 0.43]} />
-        <meshStandardMaterial color={isActive || isHovered ? "#3f6f62" : "#273d39"} roughness={0.85} flatShading />
+        <boxGeometry args={[0.68, 0.13, 0.48]} />
+        <meshStandardMaterial color={isActive || isHovered ? "#4c7a6d" : "#344c46"} roughness={0.85} flatShading />
       </mesh>
-      <mesh castShadow position={[0, 0.18, -0.04]} rotation={[0, 0, 0.04]}>
-        <boxGeometry args={[0.5, 0.12, 0.16]} />
-        <primitive object={darkMaterial} attach="material" />
+      <mesh castShadow position={[0, 0.048, 0.025]}>
+        <boxGeometry args={[0.56, 0.035, 0.36]} />
+        <meshStandardMaterial color="#22302f" roughness={0.88} flatShading />
       </mesh>
-      <mesh castShadow position={[-0.14, 0.08, 0.12]}>
-        <boxGeometry args={[0.09, 0.035, 0.06]} />
+      <mesh castShadow position={[0, 0.15, -0.09]} rotation={[0, 0, 0.04]}>
+        <boxGeometry args={[0.58, 0.1, 0.14]} />
+        <meshStandardMaterial color="#17191b" roughness={0.82} flatShading />
+      </mesh>
+      <mesh position={[0, 0.2, -0.09]}>
+        <boxGeometry args={[0.36, 0.035, 0.09]} />
+        <meshStandardMaterial color="#2c3134" roughness={0.82} flatShading />
+      </mesh>
+      <mesh castShadow position={[-0.28, 0.15, -0.09]} rotation={[0, 0, -0.12]}>
+        <boxGeometry args={[0.12, 0.11, 0.16]} />
+        <meshStandardMaterial color="#17191b" roughness={0.82} flatShading />
+      </mesh>
+      <mesh castShadow position={[0.28, 0.15, -0.09]} rotation={[0, 0, 0.12]}>
+        <boxGeometry args={[0.12, 0.11, 0.16]} />
+        <meshStandardMaterial color="#17191b" roughness={0.82} flatShading />
+      </mesh>
+      <mesh position={[-0.28, 0.205, -0.045]}>
+        <boxGeometry args={[0.07, 0.025, 0.055]} />
         <meshStandardMaterial color="#c7bda7" roughness={0.75} flatShading />
       </mesh>
-      <mesh castShadow position={[0, 0.08, 0.12]}>
-        <boxGeometry args={[0.09, 0.035, 0.06]} />
+      <mesh position={[0.28, 0.205, -0.045]}>
+        <boxGeometry args={[0.07, 0.025, 0.055]} />
         <meshStandardMaterial color="#c7bda7" roughness={0.75} flatShading />
       </mesh>
-      <mesh castShadow position={[0.14, 0.08, 0.12]}>
-        <boxGeometry args={[0.09, 0.035, 0.06]} />
-        <meshStandardMaterial color="#c7bda7" roughness={0.75} flatShading />
+      <mesh castShadow position={[-0.24, 0.04, -0.05]}>
+        <boxGeometry args={[0.08, 0.035, 0.22]} />
+        <meshStandardMaterial color="#1d2528" roughness={0.8} flatShading />
       </mesh>
-      <mesh position={[0.33, 0.08, -0.08]} rotation={[0, 0.7, 0]}>
-        <torusGeometry args={[0.13, 0.012, 5, 10, Math.PI]} />
+      {[-0.08, 0.04, 0.16].map((x) =>
+        [-0.02, 0.1, 0.22].map((z) => (
+          <mesh castShadow key={`${x}-${z}`} position={[x, 0.09, z]}>
+            <boxGeometry args={[0.065, 0.025, 0.05]} />
+            <meshStandardMaterial color="#c7bda7" roughness={0.75} flatShading />
+          </mesh>
+        )),
+      )}
+      <mesh castShadow position={[0.24, 0.082, 0.19]}>
+        <boxGeometry args={[0.1, 0.026, 0.085]} />
+        <meshStandardMaterial color="#8fb9ff" emissive="#1a2f4c" emissiveIntensity={0.12} roughness={0.75} flatShading />
+      </mesh>
+      <mesh castShadow position={[-0.22, 0.09, 0.2]}>
+        <boxGeometry args={[0.12, 0.025, 0.08]} />
+        <meshStandardMaterial color="#ffce63" emissive="#4a2d12" emissiveIntensity={0.1} roughness={0.75} flatShading />
+      </mesh>
+      <mesh position={[0.31, 0.08, -0.14]} rotation={[0, 0.65, 0]}>
+        <torusGeometry args={[0.14, 0.012, 5, 12, Math.PI]} />
         <meshStandardMaterial color="#15161a" roughness={0.9} flatShading />
       </mesh>
-      <StatusLight active={isActive || isHovered} position={[0.24, 0.19, 0.18]} />
+      <mesh position={[0.18, 0.11, 0.0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.11, 0.009, 5, 12, Math.PI]} />
+        <meshStandardMaterial color="#15161a" roughness={0.9} flatShading />
+      </mesh>
+      <StatusLight active={isActive || isHovered} position={[0.25, 0.15, 0.15]} />
     </group>
   );
 }
@@ -715,7 +833,7 @@ function Folder({ activeSection, hoveredSection, onHoverSection, onMovePointer, 
 
   return (
     <group
-      position={[0.94, 1.015, -2.42]}
+      position={[0.94, 1.018, -2.42]}
       rotation={[0, -0.1, 0]}
       scale={isHovered ? 1.08 : 1}
       onClick={(event) => {
@@ -733,31 +851,59 @@ function Folder({ activeSection, hoveredSection, onHoverSection, onMovePointer, 
         <boxGeometry args={[0.86, 0.07, 0.56]} />
         <meshStandardMaterial color={isActive || isHovered ? "#ffce63" : "#c88c3d"} roughness={0.95} flatShading />
       </mesh>
-      <mesh position={[-0.26, 0.055, -0.2]}>
-        <boxGeometry args={[0.32, 0.08, 0.17]} />
+      <mesh position={[-0.32, 0.055, -0.22]}>
+        <boxGeometry args={[0.32, 0.08, 0.18]} />
         <meshStandardMaterial color={isActive || isHovered ? "#ffdd7d" : "#d99b49"} roughness={0.95} flatShading />
       </mesh>
-      <mesh position={[0.08, 0.055, 0.02]} rotation={[0, 0, -0.03]}>
-        <boxGeometry args={[0.62, 0.025, 0.42]} />
+      <mesh position={[0.1, 0.055, 0.08]} rotation={[0, 0, -0.02]}>
+        <boxGeometry args={[0.62, 0.025, 0.38]} />
         <meshStandardMaterial color="#efe6cf" roughness={0.88} flatShading />
       </mesh>
-      <mesh position={[0.13, 0.085, 0.03]} rotation={[0, 0, -0.06]}>
-        <boxGeometry args={[0.54, 0.024, 0.36]} />
+      <mesh position={[0.02, 0.072, -0.02]} rotation={[0, 0, -0.035]}>
+        <boxGeometry args={[0.58, 0.02, 0.34]} />
+        <meshStandardMaterial color="#fff7df" roughness={0.88} flatShading />
+      </mesh>
+      <mesh position={[0.16, 0.085, 0.1]} rotation={[0, 0, -0.05]}>
+        <boxGeometry args={[0.52, 0.024, 0.32]} />
         <meshStandardMaterial color="#d9d1bf" roughness={0.88} flatShading />
       </mesh>
+      <mesh position={[0.25, 0.118, -0.2]}>
+        <boxGeometry args={[0.3, 0.03, 0.16]} />
+        <meshStandardMaterial color="#273d39" roughness={0.85} flatShading />
+      </mesh>
+      <mesh position={[-0.08, 0.116, 0.02]} rotation={[0, 0, -0.05]}>
+        <boxGeometry args={[0.34, 0.018, 0.025]} />
+        <meshStandardMaterial color="#9d9587" roughness={0.88} flatShading />
+      </mesh>
+      <mesh position={[-0.02, 0.118, 0.12]} rotation={[0, 0, -0.05]}>
+        <boxGeometry args={[0.42, 0.018, 0.025]} />
+        <meshStandardMaterial color="#9d9587" roughness={0.88} flatShading />
+      </mesh>
+      <mesh castShadow position={[-0.28, 0.122, 0.18]} rotation={[0, 0, 0.08]}>
+        <boxGeometry args={[0.08, 0.045, 0.15]} />
+        <meshStandardMaterial color="#c7bda7" metalness={0.25} roughness={0.62} flatShading />
+      </mesh>
+      <LabelPlane
+        text="CV"
+        width={0.22}
+        height={0.1}
+        position={[0.25, 0.136, -0.2]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      />
       <StatusLight active={isActive || isHovered} position={[0.32, 0.11, 0.2]} />
     </group>
   );
 }
 
-function Door({ activeSection, hoveredSection, onHoverSection, onMovePointer, onSelectSection, onUnhoverSection }) {
+function ProfileCard({ activeSection, hoveredSection, onHoverSection, onMovePointer, onSelectSection, onUnhoverSection }) {
   const isActive = activeSection === "about";
   const isHovered = hoveredSection === "about";
 
   return (
     <group
-      position={[3.08, 0.92, -3.68]}
-      scale={isHovered ? 1.03 : 1}
+      position={[-3.66, 2.32, -2.72]}
+      rotation={[0, Math.PI / 2, 0]}
+      scale={isHovered ? 0.86 : 0.8}
       onClick={(event) => {
         event.stopPropagation();
         onSelectSection("about");
@@ -766,22 +912,70 @@ function Door({ activeSection, hoveredSection, onHoverSection, onMovePointer, on
       onPointerOut={onUnhoverSection}
       onPointerOver={(event) => {
         event.stopPropagation();
-        onHoverSection("about", event);
+        onHoverSection("about", event, "Perfil profesional");
       }}
     >
       <mesh castShadow>
+        <boxGeometry args={[0.86, 1.05, 0.08]} />
+        <meshStandardMaterial color={isActive || isHovered ? "#344750" : "#222b32"} roughness={0.86} flatShading />
+      </mesh>
+      <mesh position={[0, 0, 0.055]}>
+        <boxGeometry args={[0.74, 0.9, 0.04]} />
+        <meshStandardMaterial color="#c7bda7" roughness={0.82} flatShading />
+      </mesh>
+      <mesh position={[0, 0.18, 0.085]}>
+        <boxGeometry args={[0.32, 0.32, 0.035]} />
+        <meshStandardMaterial color="#263d4d" roughness={0.82} flatShading />
+      </mesh>
+      <mesh position={[0, 0.25, 0.12]}>
+        <boxGeometry args={[0.16, 0.16, 0.06]} />
+        <primitive object={skinMaterial} attach="material" />
+      </mesh>
+      <mesh position={[0, 0.34, 0.13]}>
+        <boxGeometry args={[0.19, 0.07, 0.07]} />
+        <meshStandardMaterial color="#231c1d" roughness={0.95} flatShading />
+      </mesh>
+      <mesh position={[0, 0.07, 0.12]}>
+        <boxGeometry args={[0.24, 0.16, 0.055]} />
+        <primitive object={shirtMaterial} attach="material" />
+      </mesh>
+      <mesh position={[0, -0.22, 0.09]}>
+        <boxGeometry args={[0.5, 0.06, 0.035]} />
+        <meshStandardMaterial color="#273d39" roughness={0.85} flatShading />
+      </mesh>
+      <LabelPlane text="PLAYER ID" color="#63f28a" width={0.54} height={0.13} position={[0, -0.22, 0.115]} />
+      <mesh position={[-0.2, -0.37, 0.09]}>
+        <boxGeometry args={[0.18, 0.04, 0.03]} />
+        <meshStandardMaterial color="#3f80b6" roughness={0.85} flatShading />
+      </mesh>
+      <mesh position={[0.08, -0.37, 0.09]}>
+        <boxGeometry args={[0.28, 0.04, 0.03]} />
+        <meshStandardMaterial color="#7aa071" roughness={0.85} flatShading />
+      </mesh>
+      <StatusLight active={isActive || isHovered} position={[0.34, 0.38, 0.1]} />
+    </group>
+  );
+}
+
+function Door() {
+  return (
+    <group position={[3.08, 0.92, -3.68]}>
+      <mesh castShadow>
         <boxGeometry args={[0.95, 2.05, 0.12]} />
-        <meshStandardMaterial color={isActive || isHovered ? "#7a5430" : "#51371f"} roughness={0.9} flatShading />
+        <meshStandardMaterial color="#51371f" roughness={0.9} flatShading />
       </mesh>
       <mesh position={[0, 0.28, 0.07]}>
         <boxGeometry args={[0.52, 0.72, 0.035]} />
         <meshStandardMaterial color="#2d2520" roughness={0.95} flatShading />
       </mesh>
-      <mesh position={[0.28, 0, 0.08]}>
-        <sphereGeometry args={[0.05, 6, 6]} />
-        <primitive object={glowMaterial} attach="material" />
+      <mesh castShadow position={[0.3, -0.04, 0.095]}>
+        <boxGeometry args={[0.08, 0.16, 0.045]} />
+        <meshStandardMaterial color="#c08a45" roughness={0.72} metalness={0.15} flatShading />
       </mesh>
-      <StatusLight active={isActive || isHovered} position={[0, 1.25, 0.08]} />
+      <mesh castShadow position={[0.21, -0.04, 0.095]}>
+        <boxGeometry args={[0.2, 0.055, 0.04]} />
+        <meshStandardMaterial color="#a87434" roughness={0.75} metalness={0.12} flatShading />
+      </mesh>
     </group>
   );
 }
@@ -864,12 +1058,14 @@ function LegPair() {
 
 function StatusLight({ active, position }) {
   return (
-    <mesh position={position} scale={active ? 1 : 0.76}>
-      <sphereGeometry args={[0.042, 6, 6]} />
+    <mesh position={position} scale={active ? 0.9 : 0.52}>
+      <sphereGeometry args={[0.038, 6, 6]} />
       <meshStandardMaterial
         color={active ? "#ffce63" : "#63f28a"}
         emissive={active ? "#6a3f12" : "#174b27"}
-        emissiveIntensity={active ? 0.85 : 0.28}
+        emissiveIntensity={active ? 0.62 : 0.12}
+        opacity={active ? 1 : 0.82}
+        transparent
         flatShading
       />
     </mesh>
