@@ -23,6 +23,7 @@ export function RetroRoom({
   onHoverSection,
   onMovePointer,
   onSelectSection,
+  onTeddyPress,
   onUnhoverSection,
 }) {
   return (
@@ -39,7 +40,7 @@ export function RetroRoom({
       <ChairAndPerson />
       <RoomProps />
       <LeftFurniture />
-      <RedSofa />
+      <RedSofa onTeddyPress={onTeddyPress} />
       <Whiteboard
         activeSection={activeSection}
         hoveredSection={hoveredSection}
@@ -301,7 +302,7 @@ function SoccerBall() {
   );
 }
 
-function RedSofa() {
+function RedSofa({ onTeddyPress }) {
   return (
     <group position={[-3.36, 0, 0.05]}>
       <mesh castShadow receiveShadow position={[0.18, 0.3, 0]}>
@@ -324,7 +325,7 @@ function RedSofa() {
       </mesh>
       <SofaLeg z={-0.58} />
       <SofaLeg z={0.58} />
-      <TeddyBear />
+      <TeddyBear onTeddyPress={onTeddyPress} />
     </group>
   );
 }
@@ -347,7 +348,7 @@ function SofaLeg({ z }) {
   );
 }
 
-function TeddyBear() {
+function TeddyBear({ onTeddyPress }) {
   return (
     <group position={[0.31, 0.64, 0.32]} rotation={[0, Math.PI / 2, 0]} scale={0.7}>
       <mesh castShadow position={[0, 0.08, 0]}>
@@ -368,7 +369,13 @@ function TeddyBear() {
         <boxGeometry args={[0.035, 0.035, 0.025]} />
         <meshStandardMaterial color="#1b1514" roughness={0.9} flatShading />
       </mesh>
-      <mesh position={[0, 0.26, 0.14]}>
+      <mesh
+        position={[0, 0.26, 0.14]}
+        onClick={(event) => {
+          event.stopPropagation();
+          onTeddyPress?.();
+        }}
+      >
         <boxGeometry args={[0.065, 0.045, 0.025]} />
         <meshStandardMaterial color="#2d1b17" roughness={0.9} flatShading />
       </mesh>

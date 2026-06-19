@@ -13,6 +13,7 @@ export default function App() {
   const [isMusicEnabled, setIsMusicEnabled] = useState(false);
   const [audioStatus, setAudioStatus] = useState("MÚSICA OFF");
   const audioRef = useRef(null);
+  const teddyAudioRef = useRef(null);
   const audioContextRef = useRef(null);
 
   const currentSection = useMemo(
@@ -20,6 +21,7 @@ export default function App() {
     [activeSection],
   );
   const currentClassicSection = sections[classicSection] ?? sections.about;
+  const canExploreObjects = mode === "explore";
 
   useEffect(() => {
     if (mode !== "entering") return undefined;
@@ -39,6 +41,12 @@ export default function App() {
     return () => document.body.classList.remove("is-pointing");
   }, [hoveredSection]);
 
+  useEffect(() => {
+    if (canExploreObjects) return;
+    setHoveredSection(null);
+    setTooltip((current) => ({ ...current, visible: false }));
+  }, [canExploreObjects]);
+
   function selectMenuItem(itemId) {
     if (itemId === "start") {
       playSfx("start");
@@ -53,6 +61,7 @@ export default function App() {
   }
 
   function showSection(sectionId) {
+    if (!canExploreObjects) return;
     setActiveSection(sectionId);
     setMode("explore");
     playSfx("open");
@@ -64,6 +73,7 @@ export default function App() {
   }
 
   function setObjectHover(sectionId, event) {
+    if (!canExploreObjects) return;
     const section = sections[sectionId];
     setHoveredSection(sectionId);
     setTooltip({
@@ -81,7 +91,7 @@ export default function App() {
   }
 
   function moveTooltip(event) {
-    if (!tooltip.visible) return;
+    if (!canExploreObjects || !tooltip.visible) return;
     setTooltip((current) => ({
       ...current,
       x: event.clientX,
@@ -108,6 +118,7 @@ export default function App() {
         open: [330, 0.035, 0.11],
         close: [150, 0.025, 0.08],
         start: [110, 0.045, 0.18],
+        teddy: [740, 0.028, 0.12],
       }[type] ?? [260, 0.025, 0.07];
 
       oscillator.type = "square";
@@ -149,6 +160,7 @@ export default function App() {
   return (
     <main className="app-shell">
       <audio ref={audioRef} loop preload="auto" src="/audio/ambient-loop.mp3" />
+      <audio ref={teddyAudioRef} preload="auto" src="/audio/teddy-sound.mp3" />
 
       <Canvas
         camera={{ position: [3.45, 1.55, 4.35], fov: 50 }}
@@ -177,8 +189,19 @@ export default function App() {
             onHoverSection={setObjectHover}
             onMovePointer={moveTooltip}
             onSelectSection={(sectionId) => {
+              if (!canExploreObjects) return;
               playSfx("click");
               showSection(sectionId);
+            }}
+            onTeddyPress={() => {
+              if (!canExploreObjects) return;
+              const teddyAudio = teddyAudioRef.current;
+              if (!teddyAudio) return;
+              teddyAudio.currentTime = 0;
+              teddyAudio.volume = 0.32;
+              teddyAudio.play().catch(() => {
+                playSfx("teddy");
+              });
             }}
             onUnhoverSection={clearObjectHover}
           />
