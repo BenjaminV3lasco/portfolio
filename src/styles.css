@@ -346,6 +346,36 @@ h2 {
   border: 1px solid rgba(242, 234, 219, 0.16);
 }
 
+.fact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.fact-card {
+  display: grid;
+  gap: 5px;
+  min-height: 68px;
+  padding: 10px;
+  border: 2px solid rgba(99, 242, 138, 0.22);
+  border-radius: 8px;
+  background: rgba(10, 12, 13, 0.56);
+}
+
+.fact-card span {
+  color: #63f28a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.fact-card strong {
+  color: #f2eadb;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
 .skill-groups {
   display: grid;
   gap: 16px;
@@ -616,5 +646,9 @@ h2 {
   .classic-toggle {
     left: 14px;
     right: auto;
+  }
+
+  .fact-grid {
+    grid-template-columns: 1fr;
   }
 }

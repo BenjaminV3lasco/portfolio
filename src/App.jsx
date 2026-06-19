@@ -311,6 +311,17 @@ function SectionDetails({ section }) {
         </div>
       )}
 
+      {section.facts && (
+        <div className="fact-grid" aria-label={`Datos de ${section.label}`}>
+          {section.facts.map((fact) => (
+            <div className="fact-card" key={`${fact.label}-${fact.value}`}>
+              <span>{fact.label}</span>
+              <strong>{fact.value}</strong>
+            </div>
+          ))}
+        </div>
+      )}
+
       {section.skillGroups && (
         <div className="skill-groups" aria-label="Habilidades tecnicas">
           {section.skillGroups.map((group) => (

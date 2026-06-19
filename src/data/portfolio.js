@@ -7,9 +7,18 @@ export const sections = {
   about: {
     label: "SOBRE MI",
     title: "PERFIL DEL PERSONAJE",
-    subtitle: "Nombre: Benjamin Velasco",
-    body: "Estudiante de Ingenieria en Sistemas de Informacion y desarrollador full stack en formacion. Me gusta crear sistemas web utiles, herramientas de gestion y experiencias digitales interactivas.",
-    lines: ["Clase: Desarrollador", "Ubicacion: Argentina", "Modo: Aprender construyendo"],
+    subtitle: "Nombre: Leonelo Benjamin Velasco Monticone",
+    body: "Analista Universitario en Sistemas y estudiante avanzado de Ingenieria en Sistemas de Informacion. Actualmente curso el ultimo ano de la carrera y realizo mi Practica Profesional Supervisada en Kaizen Software, donde participo en el desarrollo de Cenprofar, una aplicacion real de entorno profesional. Me interesa crear sistemas web utiles, claros y bien pensados. Me gusta aprender construyendo, trabajar en equipo y mejorar mis habilidades tecnicas mientras participo en proyectos reales.",
+    lines: [],
+    facts: [
+      { label: "Carrera", value: "Ingenieria en Sistemas de Informacion" },
+      { label: "Titulo intermedio", value: "Analista Universitario en Sistemas" },
+      { label: "Experiencia actual", value: "PPS en Kaizen Software" },
+      { label: "Proyecto", value: "Cenprofar" },
+      { label: "Enfoque", value: "Desarrollo web full stack" },
+      { label: "Stack actual", value: "React, Next.js, TypeScript, Tailwind, T3" },
+      { label: "Ubicacion: Argentina", value: "San Luis, Villa Mercedes" },
+    ],
   },
   projects: {
     label: "PROYECTOS",
