@@ -208,7 +208,7 @@ export default function App() {
       )}
 
       {mode === "explore" && currentSection && (
-        <section className="interface-panel" aria-live="polite">
+        <section className={`interface-panel ${activeSection === "projects" ? "projects-panel" : ""}`} aria-live="polite">
           <button className="panel-close" type="button" onClick={closePanel} aria-label="Cerrar panel">
             X
           </button>
@@ -307,6 +307,56 @@ function SectionDetails({ section }) {
               <span className={`social-icon ${link.icon}`} aria-hidden="true" />
               <span>{link.label}</span>
             </a>
+          ))}
+        </div>
+      )}
+
+      {section.projects && (
+        <div className="project-grid" aria-label="Misiones de proyecto">
+          {section.projects.map((project) => (
+            <article className="project-card" key={project.title}>
+              <div className="project-preview" aria-hidden="true">
+                <span>{project.code}</span>
+                {project.image ? (
+                  <img alt="" src={project.image} />
+                ) : (
+                  <div className="preview-window">
+                    <i />
+                    <i />
+                    <i />
+                  </div>
+                )}
+              </div>
+              <div className="project-content">
+                <div className="project-heading">
+                  <span>{project.code}</span>
+                  <span>{project.status}</span>
+                </div>
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
+                <div className="tech-tags">
+                  {project.tech.map((tech) => (
+                    <span key={tech}>{tech}</span>
+                  ))}
+                </div>
+                <div className="project-actions">
+                  {project.actions.map((action) =>
+                    action.href ? (
+                      <a href={action.href} key={action.label} rel="noreferrer" target="_blank">
+                        {action.label.toLowerCase() === "github" && (
+                          <span className="social-icon github" aria-hidden="true" />
+                        )}
+                        {action.label}
+                      </a>
+                    ) : (
+                      <button disabled={action.disabled} key={action.label} type="button">
+                        {action.label}
+                      </button>
+                    ),
+                  )}
+                </div>
+              </div>
+            </article>
           ))}
         </div>
       )}

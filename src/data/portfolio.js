@@ -23,12 +23,40 @@ export const sections = {
     label: "PROYECTOS",
     title: "SELECCIÓN DE MISIÓN",
     subtitle: "Trabajos seleccionados",
-    body: "Los proyectos se presentan como misiones. La idea es conectar cada una con una demo, un repositorio de GitHub y una explicación más detallada.",
-    lines: [
-      "MISIÓN 01 - Sistema de gestión de tarjetas",
-      "MISIÓN 02 - Panel académico",
-      "MISIÓN 03 - Gestión de API REST",
-      "MISIÓN 04 - Portfolio retro 3D",
+    body: "Cada proyecto funciona como una misión: un problema concreto, un stack técnico y una solución construida o en progreso.",
+    lines: [],
+    projects: [
+      {
+        code: "MISIÓN 01",
+        title: "Cenprofar",
+        description: "Aplicación web de entorno profesional desarrollada durante mi Práctica Profesional Supervisada en Kaizen Software.",
+        status: "Proyecto profesional",
+        tech: ["T3 Stack", "React", "Next.js", "TypeScript", "Tailwind CSS"],
+        actions: [
+          { label: "Privado", disabled: true },
+        ],
+      },
+      {
+        code: "MISIÓN 02",
+        title: "Juego de banderas",
+        description: "Juego web para practicar reconocimiento de banderas, con interacción simple y enfoque en lógica de interfaz.",
+        status: "Público",
+        tech: ["HTML", "CSS", "JavaScript"],
+        actions: [
+          { label: "GitHub", href: "https://github.com/BenjaminV3lasco/juego_banderas" },
+        ],
+      },
+      {
+        code: "MISIÓN 03",
+        title: "Lista de tareas",
+        description: "Task tracker desarrollado con React para el examen final de la materia Programación Web. Permite organizar tareas, seguir progreso y consultar reportes.",
+        status: "Público",
+        tech: ["React", "JavaScript", "CSS", "Vercel"],
+        actions: [
+          { label: "Demo", href: "https://lista-tareas-2qf6e6qj5-benjaminv3lascos-projects.vercel.app" },
+          { label: "GitHub", href: "https://github.com/BenjaminV3lasco/lista-tareas" },
+        ],
+      },
     ],
   },
   skills: {
