@@ -39,6 +39,7 @@ export function RetroRoom({
       <ChairAndPerson />
       <RoomProps />
       <LeftFurniture />
+      <RedSofa />
       <Whiteboard
         activeSection={activeSection}
         hoveredSection={hoveredSection}
@@ -297,6 +298,106 @@ function SoccerBall() {
         <meshStandardMaterial color="#1c1d20" roughness={0.95} flatShading />
       </mesh>
     </group>
+  );
+}
+
+function RedSofa() {
+  return (
+    <group position={[-3.36, 0, 0.05]}>
+      <mesh castShadow receiveShadow position={[0.18, 0.3, 0]}>
+        <boxGeometry args={[0.6, 0.3, 1.58]} />
+        <meshStandardMaterial color="#8f2430" roughness={0.92} flatShading />
+      </mesh>
+      <mesh castShadow receiveShadow position={[-0.04, 0.66, 0]}>
+        <boxGeometry args={[0.2, 0.72, 1.58]} />
+        <meshStandardMaterial color="#641b25" roughness={0.95} flatShading />
+      </mesh>
+      <SofaArm z={-0.9} />
+      <SofaArm z={0.9} />
+      <mesh castShadow position={[0.32, 0.49, -0.39]}>
+        <boxGeometry args={[0.42, 0.12, 0.66]} />
+        <meshStandardMaterial color="#a62c38" roughness={0.9} flatShading />
+      </mesh>
+      <mesh castShadow position={[0.32, 0.49, 0.39]}>
+        <boxGeometry args={[0.42, 0.12, 0.66]} />
+        <meshStandardMaterial color="#a62c38" roughness={0.9} flatShading />
+      </mesh>
+      <SofaLeg z={-0.58} />
+      <SofaLeg z={0.58} />
+      <TeddyBear />
+    </group>
+  );
+}
+
+function SofaArm({ z }) {
+  return (
+    <mesh castShadow receiveShadow position={[0.18, 0.44, z]}>
+      <boxGeometry args={[0.58, 0.48, 0.16]} />
+      <meshStandardMaterial color="#741f2a" roughness={0.94} flatShading />
+    </mesh>
+  );
+}
+
+function SofaLeg({ z }) {
+  return (
+    <mesh castShadow receiveShadow position={[0.38, 0.12, z]}>
+      <boxGeometry args={[0.1, 0.24, 0.1]} />
+      <meshStandardMaterial color="#2d1718" roughness={0.95} flatShading />
+    </mesh>
+  );
+}
+
+function TeddyBear() {
+  return (
+    <group position={[0.31, 0.64, 0.32]} rotation={[0, Math.PI / 2, 0]} scale={0.7}>
+      <mesh castShadow position={[0, 0.08, 0]}>
+        <boxGeometry args={[0.28, 0.28, 0.2]} />
+        <meshStandardMaterial color="#8a5f3d" roughness={0.95} flatShading />
+      </mesh>
+      <mesh castShadow position={[0, 0.31, 0.02]}>
+        <boxGeometry args={[0.24, 0.22, 0.2]} />
+        <meshStandardMaterial color="#9b7048" roughness={0.95} flatShading />
+      </mesh>
+      <TeddyEar x={-0.13} />
+      <TeddyEar x={0.13} />
+      <mesh position={[-0.055, 0.33, 0.13]}>
+        <boxGeometry args={[0.035, 0.035, 0.025]} />
+        <meshStandardMaterial color="#1b1514" roughness={0.9} flatShading />
+      </mesh>
+      <mesh position={[0.055, 0.33, 0.13]}>
+        <boxGeometry args={[0.035, 0.035, 0.025]} />
+        <meshStandardMaterial color="#1b1514" roughness={0.9} flatShading />
+      </mesh>
+      <mesh position={[0, 0.26, 0.14]}>
+        <boxGeometry args={[0.065, 0.045, 0.025]} />
+        <meshStandardMaterial color="#2d1b17" roughness={0.9} flatShading />
+      </mesh>
+      <mesh castShadow position={[-0.15, 0.06, 0.02]} rotation={[0, 0, 0.18]}>
+        <boxGeometry args={[0.08, 0.18, 0.08]} />
+        <meshStandardMaterial color="#7a5235" roughness={0.95} flatShading />
+      </mesh>
+      <mesh castShadow position={[0.15, 0.06, 0.02]} rotation={[0, 0, -0.18]}>
+        <boxGeometry args={[0.08, 0.18, 0.08]} />
+        <meshStandardMaterial color="#7a5235" roughness={0.95} flatShading />
+      </mesh>
+      <mesh castShadow position={[-0.07, -0.06, 0.04]} rotation={[0.15, 0, 0.08]}>
+        <boxGeometry args={[0.1, 0.13, 0.1]} />
+        <meshStandardMaterial color="#70482f" roughness={0.95} flatShading />
+      </mesh>
+      <mesh castShadow position={[0.07, -0.06, 0.04]} rotation={[0.15, 0, -0.08]}>
+        <boxGeometry args={[0.1, 0.13, 0.1]} />
+        <meshStandardMaterial color="#70482f" roughness={0.95} flatShading />
+      </mesh>
+    </group>
+  );
+}
+
+function TeddyEar({ x }) {
+  return (
+    <mesh castShadow position={[x, 0.46, 0.02]}>
+      <boxGeometry args={[0.095, 0.095, 0.075]} />
+      <meshStandardMaterial color="#7a5235" roughness={0.95} flatShading />
+    </mesh>
   );
 }
 
