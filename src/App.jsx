@@ -317,7 +317,11 @@ function SectionDetails({ section }) {
             <article className="project-card" key={project.title}>
               <div className="project-preview" aria-hidden="true">
                 <span>{project.code}</span>
-                {project.image ? (
+                {project.video ? (
+                  <video autoPlay loop muted playsInline poster={project.image}>
+                    <source src={project.video} type="video/mp4" />
+                  </video>
+                ) : project.image ? (
                   <img alt="" src={project.image} />
                 ) : (
                   <div className="preview-window">
