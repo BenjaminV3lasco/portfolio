@@ -1,6 +1,6 @@
 # Portfolio 3D Retro
 
-Portfolio web interactivo de Leonelo Benjamín Velasco Monticone, construido como una habitación retro 3D explorable. La propuesta combina una estética low poly inspirada en PS2 / early 2000s con una interfaz tipo videojuego para presentar información profesional, proyectos, habilidades, educación, contacto y CV.
+Portfolio web interactivo, construido como una habitación retro 3D explorable. La propuesta combina una estética low poly inspirada en PS2 / early 2000s con una interfaz tipo videojuego para presentar información profesional, proyectos, habilidades, educación, contacto y CV.
 
 ## Concepto
 
