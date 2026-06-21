@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Low poly dog face icon">
+  <rect width="64" height="64" rx="14" fill="#111318"/>
+  <path d="M11 18 4 8v25z" fill="#5a3725"/>
+  <path d="M53 18 60 8v25z" fill="#5a3725"/>
+  <path d="M12 17h40l8 25-14 14H18L4 42z" fill="#c98343"/>
+  <path d="M12 17h20v39H18L4 42z" fill="#e0a45a"/>
+  <path d="M32 17h20l8 25-14 14H32z" fill="#a96335"/>
+  <path d="M20 31h8v8h-8z" fill="#111318"/>
+  <path d="M36 31h8v8h-8z" fill="#111318"/>
+  <path d="M24 43h16l-8 9z" fill="#251511"/>
+  <path d="M18 52h28l-14 6z" fill="#f0d19a"/>
+  <path d="M23 18h18l11 8H12z" fill="#f0b667"/>
+  <path d="M4 8 22 18l-11 15z" fill="#3a261d"/>
+  <path d="M60 8 42 18l11 15z" fill="#3a261d"/>
+</svg>
