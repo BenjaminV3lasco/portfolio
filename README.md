@@ -1,51 +1,52 @@
 # Portfolio 3D Retro
 
-Portfolio web interactivo, construido como una habitación retro 3D explorable. La propuesta combina una estética low poly inspirada en PS2 / early 2000s con una interfaz tipo videojuego para presentar información profesional, proyectos, habilidades, educación, contacto y CV.
+Este es mi portfolio personal, armado como una habitación retro 3D donde cada objeto abre una parte distinta de mi perfil. La idea fue salir un poco del formato clásico de portfolio y llevarlo a algo más cercano a una experiencia interactiva, con estética low poly, tonos oscuros, scanlines y una vibra de juegos de principios de los 2000.
 
-## Concepto
+El proyecto está hecho con React, Vite, Three.js y React Three Fiber.
 
-La pantalla inicial funciona como menú de entrada. Antes de presionar **INICIAR**, los objetos de la escena no son interactivos. Al entrar en modo exploración, el usuario puede tocar distintos elementos 3D de la habitación para abrir secciones del portfolio.
+## Idea del proyecto
 
-También incluye **Modo Clásico**, una vista rápida en formato de tabs para consultar el contenido sin recorrer la escena.
+Al entrar aparece una pantalla inicial con el título del portfolio. Después de presionar **INICIAR**, se habilita el modo exploración y los objetos de la habitación pasan a ser interactivos.
 
-## Mapa de objetos
+Cada objeto representa una sección:
 
-| Objeto en la habitación | Sección que abre |
+| Objeto | Sección |
 | --- | --- |
 | PC vieja | Proyectos |
 | Pizarra | Habilidades |
-| Cuadro académico / universidad | Educación |
-| Teléfono fijo retro | Contacto |
+| Cuadro académico | Educación |
+| Teléfono fijo | Contacto |
 | Carpeta con etiqueta CV | Descargar CV |
-| Credencial / PLAYER ID | Sobre mí |
-| Puerta | Elemento ambiental / salida visual |
-| Osito de peluche | Easter egg de sonido |
+| Credencial PLAYER ID | Sobre mí |
+| Puerta | Decoración / salida visual |
+| Osito de peluche | Detalle interactivo con sonido |
 
-## Funcionalidades
+También agregué un **Modo Clásico** para ver el contenido de forma más directa, sin tener que explorar la escena 3D.
 
-- Escena 3D low poly con estética retro, oscura y nostálgica.
-- Cámara responsive para adaptar la composición a distintas resoluciones.
-- Interacción por objetos 3D con hotspots, tooltips, cursor pointer y brillo suave.
-- Menú inicial con transición real al modo exploración.
-- Paneles estilo videojuego para secciones como Proyectos, Habilidades, Perfil y Educación.
-- Modo Clásico con tabs para una vista más directa del contenido.
-- Proyectos con imágenes, videos, links de demo y acceso a GitHub cuando corresponde.
-- Botones de contacto para correo, GitHub y LinkedIn.
-- Descarga directa del CV en PDF.
-- Música ambiente synthwave opcional.
-- Efectos de sonido para interacción y un sonido especial al tocar la nariz del osito.
-- Efecto CRT / scanlines aplicado sobre toda la experiencia.
+## Qué tiene
+
+- Escena 3D low poly con estética retro.
+- Objetos interactivos con tooltip, hover y brillo suave.
+- Paneles con estilo de videojuego.
+- Modo clásico con tabs.
+- Música ambiente opcional.
+- Efectos de sonido.
+- Descarga directa del CV.
+- Links de contacto a correo, GitHub y LinkedIn.
+- Proyectos con imágenes, videos, demos y repositorios cuando corresponde.
+- Diseño responsive para que la escena y la interfaz se acomoden mejor a distintas pantallas.
 
 ## Tecnologías
 
-- **React 19** para la interfaz principal.
-- **Vite** como entorno de desarrollo y generación de build.
-- **Three.js** para renderizar la escena 3D.
-- **React Three Fiber** para integrar Three.js con React.
-- **React Three Drei** para utilidades de cámara, texto y componentes 3D.
-- **CSS custom** para la interfaz 2D, responsive, paneles, botones, CRT y estética retro.
+- **React 19**
+- **Vite**
+- **Three.js**
+- **React Three Fiber**
+- **CSS custom**
 
-## Estructura del proyecto
+Three.js se usa para la escena, luces, materiales, geometrías y texturas. React Three Fiber permite manejar esa escena desde componentes de React. El CSS se encarga de toda la parte 2D: menú, botones, paneles, efectos CRT, responsive y modo clásico.
+
+## Estructura
 
 ```txt
 src/
@@ -59,35 +60,29 @@ src/
 
 public/
   audio/
-    ambient-loop.mp3
-    teddy-sound.mp3
   cv/
-    benjamin-velasco-cv.pdf
   projects/
-    cenprofar-cover.png
-    cenprofar-demo.mp4
-    juego-banderas.mp4
-    lista-tareas.png
 
 dist/
-  assets generados por el build
-
-package.json
-vite.config.cjs
 ```
 
-## Qué hace cada parte
+### Archivos principales
 
-- `src/main.jsx`: punto de entrada de React. Monta la aplicación en el HTML.
-- `src/App.jsx`: controla la experiencia principal, modos de navegación, paneles, sonidos, música, datos visibles y render del canvas 3D.
-- `src/components/RetroRoom.jsx`: construye la habitación y los objetos 3D usando React Three Fiber y Three.js.
-- `src/data/portfolio.js`: contiene los textos, proyectos, habilidades, educación, contacto y links del portfolio.
-- `src/styles.css`: define toda la estética 2D: menú, botones, paneles, responsive, modo clásico, CRT y animaciones.
-- `public/`: guarda archivos estáticos que se sirven tal cual, como audios, PDF del CV, imágenes y videos de proyectos.
-- `dist/`: carpeta generada automáticamente por `npm run build`. No se edita a mano.
-- `vite.config.cjs`: configuración de Vite. Usa una carpeta de caché propia para evitar problemas de archivos bloqueados en Windows.
+`src/main.jsx` es el punto de entrada de React.
 
-## Instalación
+`src/App.jsx` maneja la aplicación principal: estados, menú inicial, modo exploración, modo clásico, paneles, música y sonidos.
+
+`src/components/RetroRoom.jsx` contiene la habitación 3D y todos los objetos: escritorio, PC, silla, persona, pizarra, teléfono, carpeta, sillón, osito, cuadros y demás props.
+
+`src/data/portfolio.js` guarda el contenido editable del portfolio: textos, proyectos, habilidades, educación, contacto y CV.
+
+`src/styles.css` define la estética visual de la interfaz: botones, paneles, layout responsive, CRT, scanlines y animaciones.
+
+`public/` contiene archivos estáticos, como audios, PDF del CV, imágenes y videos de proyectos.
+
+`dist/` se genera automáticamente al correr el build. No se edita a mano.
+
+## Cómo correrlo
 
 Instalar dependencias:
 
@@ -95,13 +90,13 @@ Instalar dependencias:
 npm install
 ```
 
-Ejecutar en desarrollo:
+Levantar el proyecto en desarrollo:
 
 ```bash
 npm run dev
 ```
 
-Generar build de producción:
+Generar la versión de producción:
 
 ```bash
 npm run build
@@ -113,66 +108,75 @@ Previsualizar el build:
 npm run preview
 ```
 
-## Personalización
+## Cómo editar contenido
 
-El contenido principal se modifica en:
+La mayoría del contenido se cambia desde:
 
 ```txt
 src/data/portfolio.js
 ```
 
-Ahí se pueden cambiar:
+Ahí se pueden modificar textos, proyectos, tecnologías, links, datos de contacto, educación, habilidades y la ruta del CV.
 
-- textos de Sobre mí y Educación;
-- proyectos, descripciones, tecnologías, imágenes, videos y links;
-- habilidades y categorías;
-- datos de contacto;
-- link del CV.
-
-Los objetos y la composición 3D se ajustan en:
+Si querés cambiar objetos de la habitación o su posición, el archivo principal es:
 
 ```txt
 src/components/RetroRoom.jsx
 ```
 
-La estética visual de la interfaz se ajusta en:
+Si querés tocar colores, tamaños, paneles, responsive o efectos visuales de la interfaz, está en:
 
 ```txt
 src/styles.css
 ```
 
-Los archivos públicos nuevos deben colocarse en `public/` y referenciarse con rutas absolutas desde la app, por ejemplo:
+## Assets
+
+Los archivos públicos se guardan en `public/`.
+
+Ejemplos:
 
 ```txt
-/projects/mi-proyecto.png
-/audio/mi-sonido.mp3
-/cv/mi-cv.pdf
+public/audio/ambient-loop.mp3
+public/audio/teddy-sound.mp3
+public/cv/benjamin-velasco-cv.pdf
+public/projects/cenprofar-cover.png
+public/projects/cenprofar-demo.mp4
+public/projects/juego-banderas.mp4
+public/projects/lista-tareas.png
 ```
 
-## Publicación
+Desde React se referencian así:
 
-Para publicar el portfolio, primero se genera la versión final:
+```txt
+/audio/ambient-loop.mp3
+/cv/benjamin-velasco-cv.pdf
+/projects/cenprofar-cover.png
+```
+
+## Deploy
+
+El proyecto está preparado para publicarse como sitio estático. Para producción se usa:
 
 ```bash
 npm run build
 ```
 
-Ese comando crea la carpeta `dist/`, que contiene HTML, CSS, JavaScript y assets optimizados para producción. Esa carpeta es la salida que usan muchos servicios de hosting estático.
+Ese comando genera la carpeta `dist/`, que es la salida que usan servicios como Vercel, Netlify o Firebase Hosting.
 
-En plataformas como Vercel, Netlify o Firebase Hosting, normalmente se configura:
+Configuración típica en Vercel:
 
-- comando de build: `npm run build`;
-- carpeta de salida: `dist`.
+```txt
+Build command: npm run build
+Output directory: dist
+```
 
-## Notas técnicas
+## Notas
 
-- El audio se reproduce después de una interacción del usuario por restricciones normales de los navegadores.
-- La interacción con objetos 3D se habilita recién después de presionar **INICIAR**.
-- Los videos e imágenes de proyectos están en `public/projects/`.
-- El CV descargable está en `public/cv/`.
-- Si se agregan muchos proyectos, una mejora futura recomendada es sumar paginación o carrusel dentro del panel de Proyectos.
-- Si el bundle crece demasiado, se puede optimizar con carga diferida, compresión de assets o división de código.
+El audio se reproduce después de una interacción del usuario porque los navegadores bloquean autoplay con sonido.
 
-## Estado
+Los objetos 3D recién se pueden tocar después de presionar **INICIAR**.
 
-Versión funcional y pulida del portfolio retro 3D. La base visual, la navegación, el modo exploración, el modo clásico, los proyectos, el contacto, el CV y los principales assets ya están integrados.
+Si más adelante agrego más proyectos, una mejora pendiente sería sumar paginación o carrusel dentro del panel de proyectos.
+
+También se podría optimizar el tamaño del bundle separando la escena 3D con carga diferida, aunque actualmente el build funciona correctamente.
