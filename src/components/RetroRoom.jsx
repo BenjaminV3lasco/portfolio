@@ -552,7 +552,7 @@ function Computer({ active, hovered, onClick, onPointerMove, onPointerOut, onPoi
         <boxGeometry args={[0.2, 0.045, 0.28]} />
         <meshStandardMaterial color="#202126" roughness={0.9} flatShading />
       </mesh>
-      <StatusLight active={active} position={[0.41, 0.5, 0.12]} />
+      <StatusLight active={active || hovered} position={[0.41, 0.5, 0.12]} />
     </group>
   );
 }
@@ -1057,14 +1057,25 @@ function LegPair() {
 }
 
 function StatusLight({ active, position }) {
+  const marker = useRef();
+
+  useFrame(({ clock }) => {
+    if (!marker.current) return;
+
+    const pulse = (Math.sin(clock.elapsedTime * 4.2) + 1) / 2;
+    const scale = active ? 0.96 + pulse * 0.18 : 0.68 + pulse * 0.1;
+    marker.current.scale.setScalar(scale);
+    marker.current.material.emissiveIntensity = active ? 0.72 + pulse * 0.28 : 0.28 + pulse * 0.16;
+  });
+
   return (
-    <mesh position={position} scale={active ? 0.9 : 0.52}>
-      <sphereGeometry args={[0.038, 6, 6]} />
+    <mesh ref={marker} position={position}>
+      <sphereGeometry args={[0.048, 8, 8]} />
       <meshStandardMaterial
         color={active ? "#ffce63" : "#63f28a"}
         emissive={active ? "#6a3f12" : "#174b27"}
-        emissiveIntensity={active ? 0.62 : 0.12}
-        opacity={active ? 1 : 0.82}
+        emissiveIntensity={active ? 0.82 : 0.34}
+        opacity={active ? 1 : 0.94}
         transparent
         flatShading
       />
