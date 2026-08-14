@@ -47,7 +47,7 @@ export const sections = {
         status: "Público",
         tech: ["JavaScript", "HTML", "CSS", "Firebase"],
         actions: [
-          { label: "Demo", href: "https://juego-banderas-497b1.web.app" },
+          { label: "Demo", href: "https://juego-banderas-ivory.vercel.app/" },
           { label: "GitHub", href: "https://github.com/BenjaminV3lasco/juego_banderas" },
         ],
       },
