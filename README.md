@@ -17,7 +17,7 @@ Cada objeto representa una sección:
 | Cuadro académico | Educación |
 | Teléfono fijo | Contacto |
 | Carpeta con etiqueta CV | Descargar CV |
-| Credencial PLAYER ID | Sobre mí |
+| Credencial de perfil | Sobre mí |
 | Puerta | Decoración / salida visual |
 | Osito de peluche | Detalle interactivo con sonido |
 
@@ -25,15 +25,20 @@ También agregué un **Modo Clásico** para ver el contenido de forma más direc
 
 ## Qué tiene
 
-- Escena 3D low poly con estética retro.
+- Escena 3D low poly con texturas pixeladas de pared, madera, piso y tela, e iluminación suave.
 - Objetos interactivos con tooltip, hover y brillo suave.
 - Paneles con estilo de videojuego.
 - Modo clásico con tabs.
 - Música ambiente opcional.
-- Efectos de sonido.
+- Efectos de sonido diferenciados, con control independiente de la música y preferencia guardada.
 - Descarga directa del CV.
 - Links de contacto a correo, GitHub y LinkedIn.
 - Proyectos con imágenes, videos, demos y repositorios cuando corresponde.
+- Paginación de proyectos: tres por página en escritorio y uno en pantallas de hasta 1100 px.
+- Perfil, datos y experiencia laboral separados en pestañas.
+- Árboles desplegables de habilidades y materias: zoom con la rueda, arrastre, navegación por teclado y controles de expansión.
+- Árbol académico desde la tarjeta de la carrera: años completos separados por cuatrimestres, correlativas para cursar, búsqueda y estados diferenciados por texto y color.
+- Luz suave que acompaña al mouse y aros discretos en los objetos interactivos; respeta movimiento reducido y dispositivos táctiles.
 - Diseño responsive para que la escena y la interfaz se acomoden mejor a distintas pantallas.
 
 ## Tecnologías
@@ -55,8 +60,15 @@ src/
   styles.css
   components/
     RetroRoom.jsx
+    SkillsTree.jsx
+    AcademicMap.jsx
+    ConnectionMap.jsx
+    CursorCompanion.jsx
+    RetroSelect.jsx
   data/
     portfolio.js
+    skillTree.js
+    academic.js
 
 public/
   audio/
@@ -74,7 +86,13 @@ dist/
 
 `src/components/RetroRoom.jsx` contiene la habitación 3D y todos los objetos: escritorio, PC, silla, persona, pizarra, teléfono, carpeta, sillón, osito, cuadros y demás props.
 
-`src/data/portfolio.js` guarda el contenido editable del portfolio: textos, proyectos, habilidades, educación, contacto y CV.
+`src/data/portfolio.js` guarda el contenido editable del portfolio: textos, experiencia laboral, proyectos, habilidades, educación, contacto y CV.
+
+`src/data/skillTree.js` organiza las habilidades por rutas. `SkillsTree.jsx` agrega las conexiones entre rutas; son relaciones de aprendizaje y uso, no requisitos obligatorios.
+
+`src/data/academic.js` conserva los estados y las correlativas de las 45 materias del recorrido, incluidas mis dos optativas aprobadas. `AcademicMap.jsx` muestra cada año completo separado por cuatrimestres. Al elegir una materia se abre su rama de correlativas para cursar en `ConnectionMap.jsx`, con zoom y arrastre. Las materias compartidas tienen accesos a su rama principal para evitar cruces. Aprobadas, regularizadas y en curso tienen colores y etiquetas diferentes, sin repetir los requisitos en otra lista. Los requisitos para rendir siguen conservados en los datos. Los criterios y fuentes están en `ACADEMIC-DATA.md`; los PDF personales y las notas no se publican.
+
+La integridad del mapa académico se comprueba con `node check-academic.mjs`.
 
 `src/styles.css` define la estética visual de la interfaz: botones, paneles, layout responsive, CRT, scanlines y animaciones.
 
@@ -132,6 +150,12 @@ src/styles.css
 
 ## Assets
 
+El CV se guarda como `public/cv/benjamin-velasco-cv.pdf`. Para renovarlo, reemplazo ese archivo manteniendo el nombre; así no cambia el enlace de descarga.
+
+La experiencia incluye Kaizen Software (mayo a agosto de 2026) y Simple Business (agosto a noviembre de 2026). En Educación separo la práctica laboral finalizada de la entrega académica final de la PPS, que sigue pendiente junto con la tesis.
+
+Los proyectos incluyen Cenprofar, MundoQuiz (antes Juego de banderas), Lista de tareas y este portfolio. El trabajo en Simple Business se describe en Experiencia laboral, no como proyectos separados. No publico datos de clientes ni accesos internos, ni agrego demos o capturas que todavía no tengo para mostrar.
+
 Los archivos públicos se guardan en `public/`.
 
 Ejemplos:
@@ -177,6 +201,6 @@ El audio se reproduce después de una interacción del usuario porque los navega
 
 Los objetos 3D recién se pueden tocar después de presionar **INICIAR**.
 
-Si más adelante agrego más proyectos, una mejora pendiente sería sumar paginación o carrusel dentro del panel de proyectos.
+Los proyectos nuevos se agregan al arreglo `projects` y la paginación se adapta automáticamente. Las propiedades `image` y `video` son opcionales; `actions` puede quedar vacío si no hay enlaces públicos.
 
 También se podría optimizar el tamaño del bundle separando la escena 3D con carga diferida, aunque actualmente el build funciona correctamente.
