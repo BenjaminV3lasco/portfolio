@@ -5,18 +5,42 @@ export const menuItems = [
 
 export const sections = {
   about: {
-    label: "SOBRE MI",
+    label: "SOBRE MÍ",
     title: "PERFIL DEL PERSONAJE",
     subtitle: "Nombre: Leonelo Benjamín Velasco Monticone",
-    body: "Soy desarrollador en formación, orientado a la creación de aplicaciones web útiles, claras y bien pensadas. Me interesa construir sistemas que resuelvan problemas reales, mejorar continuamente mis habilidades técnicas y aprender trabajando en proyectos concretos. En agosto de 2026 finalicé mi Práctica Profesional Supervisada en Kaizen Software, donde participé en el desarrollo de Cenprofar y sumé experiencia en un entorno real de trabajo colaborativo.",
+    body: "Soy desarrollador Full Stack y me interesa crear aplicaciones web útiles, claras y bien pensadas. Trabajé en desarrollo web en Kaizen Software y en sistemas de gestión, CRM y automatización de procesos en Simple Business. Me gusta conectar herramientas, resolver necesidades reales y validar las soluciones con quienes las usan. Sigo aprendiendo, tanto en lo técnico como en mi forma de trabajar en equipo.",
     lines: [],
     facts: [
-      { label: "Rol", value: "Desarrollador Full Stack en formación" },
-      { label: "Área de interés", value: "Desarrollo web y sistemas de gestión" },
-      { label: "Experiencia", value: "PPS finalizada en Kaizen Software (08/26)" },
-      { label: "Proyecto profesional", value: "Cenprofar" },
-      { label: "Fortalezas", value: "Aprendizaje continuo, trabajo en equipo y resolución de problemas" },
-      { label: "Stack actual", value: "React, Next.js, TypeScript, Tailwind, T3 Stack" },
+      { label: "Rol", value: "Desarrollador Full Stack" },
+      { label: "Área de interés", value: "Desarrollo web, sistemas de gestión e integración de sistemas" },
+      { label: "Ubicación", value: "Villa Mercedes, San Luis, Argentina" },
+      { label: "Fortalezas", value: "Resolución de problemas, trabajo colaborativo, aprendizaje continuo y validación con usuarios" },
+      { label: "Stack de desarrollo", value: "TypeScript, React, Next.js, tRPC, Prisma y PostgreSQL" },
+      { label: "Automatización y CRM", value: "Airtable, n8n, Zapier, GoHighLevel, APIs REST y webhooks" },
+    ],
+    experience: [
+      {
+        company: "Simple Business",
+        role: "Desarrollo de software y automatización",
+        period: "08/2026 - 11/2026",
+        contributions: [
+          "Desarrollo de dashboards y aplicaciones web con React, TypeScript, Next.js y Supabase/PostgreSQL para gestión comercial y operativa.",
+          "Implementación de bases, interfaces y reportes en Airtable y CRM en GoHighLevel; tableros Kanban, calendarios de seguimiento y gestión de ventas, pagos y comisiones.",
+          "Desarrollo y depuración de automatizaciones con n8n, Zapier, APIs REST y webhooks para conectar calendarios, formularios y mensajería.",
+          "Seguimiento de campañas mediante UTMs, consolidación de métricas y automatización de resúmenes con IA para apoyar el trabajo comercial.",
+          "Relevamiento de procesos, documentación funcional, pruebas y validación con usuarios, distinguiendo implementaciones de propuestas pendientes.",
+        ],
+      },
+      {
+        company: "Kaizen Software",
+        role: "Full Stack Developer · Práctica Profesional Supervisada",
+        period: "05/2026 - 08/2026",
+        contributions: [
+          "Desarrollo y mantenimiento de Cenprofar con TypeScript, Next.js, tRPC y Prisma, trabajando tanto en frontend como en backend.",
+          "Implementación de Farmacias de Turno, su lógica asociada, el panel de gestión de farmacias y el calendario de turnos.",
+          "Trabajo colaborativo sobre una base de código existente e integración al flujo de desarrollo del equipo.",
+        ],
+      },
     ],
   },
   projects: {
@@ -33,7 +57,7 @@ export const sections = {
         video: "/projects/cenprofar-demo.mp4",
         description: "Aplicación web profesional de Cenprofar. Participé como desarrollador en Farmacias de Turno, la lógica asociada, el panel de gestión de farmacias y el calendario para administrar turnos.",
         status: "Proyecto profesional",
-        tech: ["T3 Stack", "React", "Next.js", "TypeScript", "Tailwind CSS"],
+        tech: ["T3 Stack", "React", "Next.js", "TypeScript", "tRPC", "Prisma", "Tailwind CSS"],
         actions: [
           { label: "Sitio", href: "https://cenprofar.ar" },
           { label: "Privado", disabled: true },
@@ -41,7 +65,7 @@ export const sections = {
       },
       {
         code: "MISIÓN 02",
-        title: "Juego de banderas",
+        title: "MundoQuiz",
         video: "/projects/juego-banderas.mp4",
         description: "Juego web para practicar reconocimiento de banderas, desarrollado con JavaScript, HTML y CSS puro, sin frameworks. Usé Firebase para el hosting y la base de datos donde se guardan los datos de usuarios.",
         status: "Público",
@@ -63,56 +87,99 @@ export const sections = {
           { label: "GitHub", href: "https://github.com/BenjaminV3lasco/lista-tareas" },
         ],
       },
+      {
+        code: "MISIÓN 04",
+        title: "Portfolio 3D interactivo",
+        description: "Desarrollé esta habitación retro low poly: objetos interactivos, animaciones, audio, cámara responsive y modo clásico. Construida con React y Three.js y desplegada en Vercel.",
+        status: "Proyecto personal",
+        tech: ["React", "Three.js", "React Three Fiber", "Vite", "CSS", "Vercel"],
+        actions: [{ label: "GitHub", href: "https://github.com/BenjaminV3lasco/portfolio" }],
+      },
     ],
   },
   skills: {
     label: "HABILIDADES",
-    title: "ESTADÍSTICAS",
-    subtitle: "Versión actual",
+    title: "ÁRBOL DE HABILIDADES",
+    subtitle: "Conocimientos y conexiones",
     body: "",
     lines: [],
     skillGroups: [
       {
         title: "Lenguajes",
         items: [
-          { name: "JavaScript", level: 60 },
-          { name: "TypeScript", level: 40 },
-          { name: "Java", level: 45 },
-          { name: "C", level: 30 },
+          { name: "TypeScript" },
+          { name: "JavaScript" },
+          { name: "Python" },
+          { name: "Java" },
+          { name: "C" },
         ],
       },
       {
         title: "Frontend y estilos",
         items: [
-          { name: "HTML", level: 65 },
-          { name: "CSS", level: 55 },
-          { name: "Tailwind CSS", level: 45 },
+          { name: "HTML" },
+          { name: "CSS" },
+          { name: "Tailwind CSS" },
         ],
       },
       {
         title: "Frameworks y librerías",
         items: [
-          { name: "React", level: 55 },
-          { name: "Next.js", level: 40 },
+          { name: "React" },
+          { name: "Next.js" },
+          { name: "Three.js" },
+          { name: "React Three Fiber" },
         ],
       },
       {
         title: "Stack de trabajo",
         items: [
-          { name: "T3 Stack", level: 35 },
+          { name: "T3 Stack" },
         ],
       },
       {
-        title: "Base de datos",
+        title: "Backend e integración",
+        items: [{ name: "tRPC" }, { name: "APIs REST" }, { name: "Webhooks" }, { name: "Prisma (ORM)" }],
+      },
+      {
+        title: "Bases de datos y plataformas",
         items: [
-          { name: "MySQL", level: 45 },
-          { name: "PostgreSQL", level: 40 },
+          { name: "MySQL" },
+          { name: "PostgreSQL" },
+          { name: "Supabase" },
+          { name: "Firebase" },
+          { name: "Airtable" },
         ],
+      },
+      {
+        title: "Automatización y CRM",
+        items: [{ name: "n8n" }, { name: "Zapier" }, { name: "GoHighLevel" }, { name: "ManyChat" }, { name: "Funnelchat" }],
+      },
+      {
+        title: "Calendarios, mensajería y comunidades",
+        items: [{ name: "Calendly" }, { name: "Google Sheets" }, { name: "WhatsApp / 2Chat" }, { name: "Discord" }, { name: "Skool" }],
+      },
+      {
+        title: "Arquitectura y despliegue",
+        items: [{ name: "RabbitMQ" }, { name: "Docker" }, { name: "Vercel" }, { name: "Pruebas de estrés" }],
+      },
+      {
+        title: "Herramientas de trabajo",
+        items: [{ name: "Git" }, { name: "GitHub" }, { name: "Jira" }, { name: "Slack" }, { name: "Figma" }, { name: "Miro" }, { name: "Notion" }],
+      },
+      {
+        title: "IA y análisis de datos",
+        items: [{ name: "Machine Learning (tesis en curso)" }, { name: "Random Forest (tesis)" }, { name: "Integración de modelos de lenguaje" }, { name: "Métricas y seguimiento UTM" }],
+      },
+      {
+        title: "Habilidades profesionales",
+        items: [{ name: "Resolución de problemas" }, { name: "Trabajo en equipo" }, { name: "Relevamiento de procesos" }, { name: "Documentación funcional" }, { name: "Validación con usuarios" }],
       },
       {
         title: "Idiomas",
         items: [
-          { name: "Inglés", level: 60 },
+          { name: "Español · nativo" },
+          { name: "Inglés · B1 estimado, lectura técnica y oral básico" },
         ],
       },
     ],
@@ -124,10 +191,12 @@ export const sections = {
     body: "Mi recorrido académico comenzó en 2021, cuando me decidí por estudiar la carrera de Ingeniería en Sistemas de Información en la Universidad Nacional de Villa Mercedes. En mayo de 2026 obtuve el título intermedio de Analista Universitario en Sistemas, un logro importante dentro de la carrera y una base clave para seguir creciendo en desarrollo de software, bases de datos, sistemas de información e ingeniería de software.",
     lines: [],
     facts: [
-      { label: "Universidad", value: "UNViMe" },
+      { label: "Universidad", value: "Universidad Nacional de Villa Mercedes", detail: "UNViMe" },
       { label: "Carrera", value: "Ingeniería en Sistemas de Información" },
-      { label: "Formación alcanzada", value: "Título intermedio obtenido" },
-      { label: "Estado actual", value: "Último año en curso" },
+      { label: "Formación alcanzada", value: "Analista Universitario en Sistemas" },
+      { label: "Estado académico", value: "Etapa final: tesis y entrega final de PPS pendientes" },
+      { label: "Tesis en curso", value: "Modelo Predictivo de Deserción Estudiantil" },
+      { label: "Tecnologías de tesis", value: "Python, Machine Learning y Random Forest" },
       { label: "Enfoque", value: "Desarrollo web, sistemas de información y software" },
     ],
   },
@@ -165,7 +234,7 @@ export const sections = {
       {
         label: "Descargar CV",
         icon: "cv",
-        href: "/cv/CV ATS - Leonelo Benjamín Velasco Monticone  - Analista Universitario en Sistemas.pdf",
+        href: "/cv/benjamin-velasco-cv.pdf",
         download: "benjamin-velasco-cv.pdf",
       },
     ],
