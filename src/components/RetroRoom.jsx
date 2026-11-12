@@ -1,10 +1,39 @@
 import { useFrame } from "@react-three/fiber";
-import React, { useMemo, useRef } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const wallMaterial = new THREE.MeshStandardMaterial({ color: "#5c5146", roughness: 1, flatShading: true });
-const floorMaterial = new THREE.MeshStandardMaterial({ color: "#332c29", roughness: 1, flatShading: true });
-const woodMaterial = new THREE.MeshStandardMaterial({ color: "#6c4a2e", roughness: 0.9, flatShading: true });
+const ProximityContext = createContext(null);
+
+// Small, deterministic textures preserve the pixelated look without external assets.
+function surfaceTexture(kind, repeat) {
+  const size = 64;
+  const pixels = new Uint8Array(size * size * 4);
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const noise = ((x * 37 + y * 61 + x * y * 13) % 17) - 8;
+      const grain = kind === "wood" ? Math.sin(y * 0.8 + Math.sin(x * 0.12)) * 7 : 0;
+      const seam = kind === "floor" && (y % 16 === 0 || (x + Math.floor(y / 16) * 23) % 64 === 0);
+      const weave = kind === "fabric" ? ((x + y) % 2) * 6 : 0;
+      const value = Math.round(245 + noise * 0.5 + grain - weave - (seam ? 19 : 0));
+      const offset = (y * size + x) * 4;
+      pixels.set([value, value, value, 255], offset);
+    }
+  }
+  const texture = new THREE.DataTexture(pixels, size, size);
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(repeat, repeat);
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.generateMipmaps = true;
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+const fabricTexture = surfaceTexture("fabric", 2);
+const wallMaterial = new THREE.MeshStandardMaterial({ color: "#55565a", map: surfaceTexture("wall", 4), roughness: 1, flatShading: true });
+const floorMaterial = new THREE.MeshStandardMaterial({ color: "#3c393a", map: surfaceTexture("floor", 4), roughness: 0.94, flatShading: true });
+const woodMaterial = new THREE.MeshStandardMaterial({ color: "#76583c", map: surfaceTexture("wood", 2), roughness: 0.9, flatShading: true });
 const plasticMaterial = new THREE.MeshStandardMaterial({ color: "#c7bda7", roughness: 0.75, flatShading: true });
 const darkMaterial = new THREE.MeshStandardMaterial({ color: "#15161a", roughness: 0.8, flatShading: true });
 const skinMaterial = new THREE.MeshStandardMaterial({ color: "#c28b64", roughness: 0.85, flatShading: true });
@@ -18,6 +47,7 @@ const glowMaterial = new THREE.MeshStandardMaterial({
 });
 
 export function RetroRoom({
+  proximityEnabled = true,
   activeSection,
   hoveredSection,
   onHoverSection,
@@ -26,7 +56,26 @@ export function RetroRoom({
   onTeddyPress,
   onUnhoverSection,
 }) {
+  const proximity = useRef({ x: 0, y: 0, visible: false, enabled: false });
+  proximity.current.enabled = proximityEnabled;
+  useEffect(() => {
+    function move(event) {
+      proximity.current.visible = event.pointerType === "mouse" && event.target instanceof HTMLCanvasElement;
+      proximity.current.x = event.clientX;
+      proximity.current.y = event.clientY;
+    }
+    function hide() { proximity.current.visible = false; }
+    window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("blur", hide);
+    document.documentElement.addEventListener("pointerleave", hide);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("blur", hide);
+      document.documentElement.removeEventListener("pointerleave", hide);
+    };
+  }, []);
   return (
+    <ProximityContext.Provider value={proximity}>
     <group position={[0, -1.15, 0]}>
       <RoomShell />
       <Desk
@@ -83,6 +132,7 @@ export function RetroRoom({
       />
       <Door />
     </group>
+    </ProximityContext.Provider>
   );
 }
 
@@ -93,13 +143,13 @@ function RoomShell() {
         <planeGeometry args={[7.6, 7.6, 4, 4]} />
         <primitive object={floorMaterial} attach="material" />
       </mesh>
-      <mesh position={[-0.18, -0.032, -2.12]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[1.72, 16]} />
-        <meshBasicMaterial color="#63f28a" transparent opacity={0.055} depthWrite={false} />
+      <mesh receiveShadow position={[0, 0.045, -3.66]}>
+        <boxGeometry args={[7.48, 0.17, 0.06]} />
+        <primitive object={darkMaterial} attach="material" />
       </mesh>
-      <mesh position={[-0.04, -0.031, -2.3]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.82, 12]} />
-        <meshBasicMaterial color="#9dffb5" transparent opacity={0.045} depthWrite={false} />
+      <mesh receiveShadow position={[-3.71, 0.045, 0]}>
+        <boxGeometry args={[0.06, 0.17, 7.4]} />
+        <primitive object={darkMaterial} attach="material" />
       </mesh>
       <mesh receiveShadow position={[0, 1.8, -3.75]}>
         <boxGeometry args={[7.6, 3.7, 0.12, 4, 2, 1]} />
@@ -160,6 +210,8 @@ function LabelPlane({ color = "#f2eadb", height, position, rotation = [0, 0, 0],
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = color;
     context.font = "900 58px Trebuchet MS, Arial, sans-serif";
+    const fittedSize = Math.min(58, Math.floor(58 * (canvas.width - 20) / Math.max(context.measureText(text).width, 1)));
+    context.font = `900 ${fittedSize}px Trebuchet MS, Arial, sans-serif`;
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.fillText(text, canvas.width / 2, canvas.height / 2 + 2);
@@ -240,13 +292,17 @@ function LeftWallSet() {
 function RoomProps() {
   return (
     <group>
-      <mesh castShadow position={[1.58, 1.01, -2.44]} rotation={[0, -0.14, 0]}>
-        <boxGeometry args={[0.28, 0.18, 0.28]} />
-        <meshStandardMaterial color="#57423a" roughness={0.9} flatShading />
+      <mesh castShadow position={[-1.35, 1.08, -2.83]}>
+        <cylinderGeometry args={[0.11, 0.09, 0.28, 8]} />
+        <meshStandardMaterial color="#b8c6cf" roughness={0.8} flatShading />
       </mesh>
-      <mesh position={[1.58, 1.15, -2.44]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.11, 0.018, 5, 10]} />
-        <meshStandardMaterial color="#2f2321" roughness={0.9} flatShading />
+      <mesh position={[-1.35, 1.221, -2.83]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.085, 8]} />
+        <meshStandardMaterial color="#30251e" roughness={0.9} />
+      </mesh>
+      <mesh castShadow position={[-1.21, 1.09, -2.83]}>
+        <torusGeometry args={[0.08, 0.025, 4, 8]} />
+        <meshStandardMaterial color="#b8c6cf" roughness={0.8} flatShading />
       </mesh>
       <mesh castShadow position={[0.92, 1.01, -2.68]} rotation={[0, 0.25, 0]}>
         <boxGeometry args={[0.28, 0.025, 0.3]} />
@@ -382,11 +438,11 @@ function RedSofa({ onTeddyPress }) {
       <SofaArm z={0.9} />
       <mesh castShadow position={[0.32, 0.49, -0.39]}>
         <boxGeometry args={[0.42, 0.12, 0.66]} />
-        <meshStandardMaterial color="#a62c38" roughness={0.9} flatShading />
+        <meshStandardMaterial color="#a62c38" map={fabricTexture} roughness={0.98} flatShading />
       </mesh>
       <mesh castShadow position={[0.32, 0.49, 0.39]}>
         <boxGeometry args={[0.42, 0.12, 0.66]} />
-        <meshStandardMaterial color="#a62c38" roughness={0.9} flatShading />
+        <meshStandardMaterial color="#a62c38" map={fabricTexture} roughness={0.98} flatShading />
       </mesh>
       <SofaLeg z={-0.58} />
       <SofaLeg z={0.58} />
@@ -512,14 +568,14 @@ function Leg({ x, z }) {
 function Computer({ active, hovered, onClick, onPointerMove, onPointerOut, onPointerOver }) {
   const screen = useRef();
 
-  useFrame(({ clock }) => {
-    screen.current.material.emissiveIntensity = active ? 1.8 : 1 + Math.sin(clock.elapsedTime * 4) * 0.15;
+  useFrame(() => {
+    screen.current.material.emissiveIntensity = active ? 0.85 : 0.55;
   });
 
   return (
     <group
       position={[0, 0.45, -0.2]}
-      scale={hovered ? 1.04 : 1}
+      scale={hovered ? 1.02 : 1}
       onClick={(event) => {
         event.stopPropagation();
         onClick();
@@ -535,11 +591,21 @@ function Computer({ active, hovered, onClick, onPointerMove, onPointerOut, onPoi
         <boxGeometry args={[0.95, 0.7, 0.16]} />
         <primitive object={plasticMaterial} attach="material" />
       </mesh>
+      <mesh castShadow position={[0, 0.2, -0.2]}>
+        <boxGeometry args={[0.8, 0.57, 0.32]} />
+        <meshStandardMaterial color="#a8a49a" roughness={0.9} flatShading />
+      </mesh>
+      <mesh castShadow position={[0, -0.18, -0.02]}>
+        <boxGeometry args={[0.18, 0.14, 0.16]} />
+        <primitive object={plasticMaterial} attach="material" />
+      </mesh>
       <mesh ref={screen} position={[0, 0.22, 0.091]}>
         <boxGeometry args={[0.68, 0.43, 0.035]} />
         <meshStandardMaterial color="#10261a" emissive="#2be869" emissiveIntensity={1.1} flatShading />
       </mesh>
-      <pointLight color="#6dff96" intensity={10} position={[0, 0.16, 0.2]} distance={1.85} />
+      {[0.34, 0.24, 0.14].map((y, index) => <mesh key={y} position={[-0.07, y, 0.115]}><boxGeometry args={[0.4 - index * 0.08, 0.025, 0.004]} /><meshBasicMaterial color="#a3d0ad" /></mesh>)}
+      <mesh position={[-0.23, 0.05, 0.115]}><boxGeometry args={[0.06, 0.025, 0.004]} /><meshBasicMaterial color="#e3d58e" /></mesh>
+      <pointLight color="#9edeb4" intensity={3.5} position={[0, 0.16, 0.2]} distance={1.85} />
       <mesh castShadow position={[0, -0.27, 0.08]}>
         <boxGeometry args={[0.62, 0.1, 0.3]} />
         <primitive object={plasticMaterial} attach="material" />
@@ -576,11 +642,11 @@ function Whiteboard({ activeSection, hoveredSection, onHoverSection, onMovePoint
         onHoverSection("skills", event);
       }}
     >
-      <mesh castShadow>
-        <boxGeometry args={[1.62, 1.02, 0.08]} />
-        <meshStandardMaterial color={isActive || isHovered ? "#e7dfc2" : "#b7b09f"} roughness={0.7} flatShading />
+      <mesh castShadow position={[0, 0, 0.068]}>
+        <boxGeometry args={[1.62, 1.02, 0.02]} />
+        <meshStandardMaterial color={isActive || isHovered ? "#d8dfd4" : "#b7c5bc"} roughness={0.9} flatShading />
       </mesh>
-      <mesh position={[0, 0, 0.055]}>
+      <mesh position={[0, 0, -0.012]}>
         <boxGeometry args={[1.76, 1.14, 0.055]} />
         <meshStandardMaterial color="#24272c" roughness={0.9} flatShading />
       </mesh>
@@ -592,7 +658,7 @@ function Whiteboard({ activeSection, hoveredSection, onHoverSection, onMovePoint
         <boxGeometry args={[1.18, 0.08, 0.035]} />
         <meshStandardMaterial color="#273d39" roughness={0.85} flatShading />
       </mesh>
-      <LabelPlane text="STATS" color="#63f28a" width={0.42} height={0.1} position={[0, 0.4, 0.115]} />
+      <LabelPlane text="HABILIDADES" color="#e4e8d7" width={0.9} height={0.1} position={[0, 0.4, 0.15]} />
       <SkillBar y={0.26} width={0.82} color="#63f28a" />
       <SkillBar y={0.08} width={0.62} color="#ffce63" />
       <SkillBar y={-0.1} width={0.72} color="#8fb9ff" />
@@ -748,9 +814,9 @@ function Phone({ activeSection, hoveredSection, onHoverSection, onMovePointer, o
 
   return (
     <group
-      position={[-1.08, 1.02, -2.4]}
+      position={[1.42, 1.005, -2.4]}
       rotation={[0, 0.08, 0]}
-      scale={isHovered ? 1.08 : 1}
+      scale={isHovered ? 1.025 : 1}
       onClick={(event) => {
         event.stopPropagation();
         onSelectSection("contact");
@@ -764,26 +830,26 @@ function Phone({ activeSection, hoveredSection, onHoverSection, onMovePointer, o
     >
       <mesh castShadow position={[0, 0, 0]}>
         <boxGeometry args={[0.68, 0.13, 0.48]} />
-        <meshStandardMaterial color={isActive || isHovered ? "#4c7a6d" : "#344c46"} roughness={0.85} flatShading />
+        <meshStandardMaterial color={isActive || isHovered ? "#82989c" : "#647b83"} roughness={0.85} flatShading />
       </mesh>
       <mesh castShadow position={[0, 0.048, 0.025]}>
         <boxGeometry args={[0.56, 0.035, 0.36]} />
         <meshStandardMaterial color="#22302f" roughness={0.88} flatShading />
       </mesh>
-      <mesh castShadow position={[0, 0.15, -0.09]} rotation={[0, 0, 0.04]}>
-        <boxGeometry args={[0.58, 0.1, 0.14]} />
+      <mesh castShadow position={[0, 0.19, -0.09]} rotation={[0, 0, 0.04]}>
+        <boxGeometry args={[0.44, 0.075, 0.12]} />
         <meshStandardMaterial color="#17191b" roughness={0.82} flatShading />
       </mesh>
-      <mesh position={[0, 0.2, -0.09]}>
+      <mesh position={[0, 0.235, -0.09]}>
         <boxGeometry args={[0.36, 0.035, 0.09]} />
         <meshStandardMaterial color="#2c3134" roughness={0.82} flatShading />
       </mesh>
       <mesh castShadow position={[-0.28, 0.15, -0.09]} rotation={[0, 0, -0.12]}>
-        <boxGeometry args={[0.12, 0.11, 0.16]} />
+        <boxGeometry args={[0.16, 0.14, 0.19]} />
         <meshStandardMaterial color="#17191b" roughness={0.82} flatShading />
       </mesh>
       <mesh castShadow position={[0.28, 0.15, -0.09]} rotation={[0, 0, 0.12]}>
-        <boxGeometry args={[0.12, 0.11, 0.16]} />
+        <boxGeometry args={[0.16, 0.14, 0.19]} />
         <meshStandardMaterial color="#17191b" roughness={0.82} flatShading />
       </mesh>
       <mesh position={[-0.28, 0.205, -0.045]}>
@@ -798,8 +864,8 @@ function Phone({ activeSection, hoveredSection, onHoverSection, onMovePointer, o
         <boxGeometry args={[0.08, 0.035, 0.22]} />
         <meshStandardMaterial color="#1d2528" roughness={0.8} flatShading />
       </mesh>
-      {[-0.08, 0.04, 0.16].map((x) =>
-        [-0.02, 0.1, 0.22].map((z) => (
+      {[-0.1, 0.02, 0.14].map((x) =>
+        [-0.01, 0.05, 0.11, 0.17].map((z) => (
           <mesh castShadow key={`${x}-${z}`} position={[x, 0.09, z]}>
             <boxGeometry args={[0.065, 0.025, 0.05]} />
             <meshStandardMaterial color="#c7bda7" roughness={0.75} flatShading />
@@ -833,9 +899,9 @@ function Folder({ activeSection, hoveredSection, onHoverSection, onMovePointer, 
 
   return (
     <group
-      position={[0.94, 1.018, -2.42]}
+      position={[0.62, 1.018, -2.35]}
       rotation={[0, -0.1, 0]}
-      scale={isHovered ? 1.08 : 1}
+      scale={isHovered ? 1.025 : 1}
       onClick={(event) => {
         event.stopPropagation();
         onSelectSection("cv");
@@ -903,7 +969,7 @@ function ProfileCard({ activeSection, hoveredSection, onHoverSection, onMovePoin
     <group
       position={[-3.66, 2.32, -2.72]}
       rotation={[0, Math.PI / 2, 0]}
-      scale={isHovered ? 0.86 : 0.8}
+      scale={isHovered ? 0.82 : 0.8}
       onClick={(event) => {
         event.stopPropagation();
         onSelectSection("about");
@@ -943,7 +1009,7 @@ function ProfileCard({ activeSection, hoveredSection, onHoverSection, onMovePoin
         <boxGeometry args={[0.5, 0.06, 0.035]} />
         <meshStandardMaterial color="#273d39" roughness={0.85} flatShading />
       </mesh>
-      <LabelPlane text="PLAYER ID" color="#63f28a" width={0.54} height={0.13} position={[0, -0.22, 0.115]} />
+      <LabelPlane text="PERFIL" color="#9acbae" width={0.54} height={0.13} position={[0, -0.22, 0.115]} />
       <mesh position={[-0.2, -0.37, 0.09]}>
         <boxGeometry args={[0.18, 0.04, 0.03]} />
         <meshStandardMaterial color="#3f80b6" roughness={0.85} flatShading />
@@ -1057,19 +1123,84 @@ function LegPair() {
 }
 
 function StatusLight({ active, position }) {
+  const hint = useRef();
+  const proximity = useContext(ProximityContext);
+  const nearby = useRef(0);
+  const materials = useRef([]);
+  const center = useMemo(() => new THREE.Vector3(), []);
+  const projected = useMemo(() => new THREE.Vector3(), []);
+  const tint = useMemo(() => new THREE.Color("#87dba3"), []);
   const marker = useRef();
+  const halo = useRef();
+  const orientation = useMemo(() => new THREE.Quaternion(), []);
+  const reducedMotion = useMemo(() => matchMedia("(prefers-reduced-motion: reduce)").matches, []);
 
-  useFrame(({ clock }) => {
+  useEffect(() => {
+    const object = hint.current.parent;
+    object.updateWorldMatrix(true, true);
+    new THREE.Box3().setFromObject(object).getCenter(center);
+    object.worldToLocal(center);
+    const entries = [];
+    object.traverse((mesh) => {
+      if (!mesh.isMesh || mesh === marker.current || !mesh.material?.isMeshStandardMaterial) return;
+      const original = mesh.material;
+      const isolated = original.clone();
+      mesh.material = isolated;
+      entries.push({ mesh, original, isolated });
+    });
+    materials.current = entries;
+    return () => {
+      entries.forEach(({ mesh, original, isolated }) => {
+        if (mesh.material === isolated) mesh.material = original;
+        isolated.dispose();
+      });
+      materials.current = [];
+    };
+  }, [center]);
+
+  useFrame(({ clock, camera, gl }, delta) => {
     if (!marker.current) return;
 
-    const pulse = (Math.sin(clock.elapsedTime * 4.2) + 1) / 2;
+    const cursor = proximity?.current;
+    let target = 0;
+    if (cursor?.enabled && cursor.visible) {
+      projected.copy(center);
+      hint.current.parent.localToWorld(projected);
+      projected.project(camera);
+      const rect = gl.domElement.getBoundingClientRect();
+      if (projected.z >= -1 && projected.z <= 1) {
+        const x = rect.left + (projected.x + 1) * rect.width / 2;
+        const y = rect.top + (1 - projected.y) * rect.height / 2;
+        const distance = Math.hypot(cursor.x - x, cursor.y - y);
+        target = 1 - THREE.MathUtils.smoothstep(distance, 35, Math.min(175, rect.width * 0.3));
+      }
+    }
+    nearby.current = THREE.MathUtils.damp(nearby.current, target, 9, Math.min(delta, 0.05));
+    materials.current.forEach(({ original, isolated }) => {
+      isolated.color.copy(original.color);
+      isolated.emissive.lerpColors(original.emissive, tint, nearby.current * 0.23);
+      isolated.emissiveIntensity = original.emissiveIntensity;
+    });
+
+    const pulse = reducedMotion ? 0.5 : (Math.sin(clock.elapsedTime * 2) + 1) / 2;
+    if (halo.current) {
+      halo.current.parent.getWorldQuaternion(orientation);
+      halo.current.quaternion.copy(orientation.invert()).multiply(camera.quaternion);
+      halo.current.scale.setScalar(1 + pulse * 0.08 + nearby.current * 0.18);
+      halo.current.material.opacity = active ? 0.7 : 0.18 + nearby.current * 0.48;
+    }
     const scale = active ? 0.96 + pulse * 0.18 : 0.68 + pulse * 0.1;
     marker.current.scale.setScalar(scale);
-    marker.current.material.emissiveIntensity = active ? 0.72 + pulse * 0.28 : 0.28 + pulse * 0.16;
+    marker.current.material.emissiveIntensity = active ? 0.72 + pulse * 0.28 : 0.28 + nearby.current * 0.5;
   });
 
   return (
-    <mesh ref={marker} position={position}>
+    <group ref={hint} name="interaction-hint" position={position}>
+    <mesh ref={halo} raycast={() => null}>
+      <ringGeometry args={[0.075, 0.084, 24]} />
+      <meshBasicMaterial color={active ? "#ffce63" : "#9cecb6"} transparent opacity={0.3} depthWrite={false} side={THREE.DoubleSide} />
+    </mesh>
+    <mesh ref={marker}>
       <sphereGeometry args={[0.048, 8, 8]} />
       <meshStandardMaterial
         color={active ? "#ffce63" : "#63f28a"}
@@ -1080,5 +1211,6 @@ function StatusLight({ active, position }) {
         flatShading
       />
     </mesh>
+    </group>
   );
 }
