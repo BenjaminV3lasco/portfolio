@@ -12,13 +12,13 @@ Cada objeto representa una sección:
 
 | Objeto | Sección |
 | --- | --- |
-| PC vieja | Proyectos |
+| PC vieja | Acercamiento al monitor y escritorio de proyectos |
 | Pizarra | Habilidades |
 | Cuadro académico | Educación |
 | Teléfono fijo | Contacto |
 | Carpeta con etiqueta CV | Descargar CV |
 | Credencial de perfil | Sobre mí |
-| Puerta | Decoración / salida visual |
+| Puerta EXIT | Volver al menú inicial |
 | Osito de peluche | Detalle interactivo con sonido |
 
 También agregué un **Modo Clásico** para ver el contenido de forma más directa, sin tener que explorar la escena 3D.
@@ -34,6 +34,7 @@ También agregué un **Modo Clásico** para ver el contenido de forma más direc
 - Descarga directa del CV.
 - Links de contacto a correo, GitHub y LinkedIn.
 - Proyectos con imágenes, videos, demos y repositorios cuando corresponde.
+- Al tocar la PC, la cámara se acerca al monitor. Cada proyecto aparece como una carpeta: se puede buscar por nombre, abrir su ficha y ver sus enlaces o video. Escape vuelve a las carpetas y luego a la habitación; también hay un botón para salir directamente.
 - Paginación de proyectos: tres por página en escritorio y uno en pantallas de hasta 1100 px.
 - Perfil, datos y experiencia laboral separados en pestañas.
 - Árboles desplegables de habilidades y materias: zoom con la rueda, arrastre, navegación por teclado y controles de expansión.
@@ -60,6 +61,7 @@ src/
   styles.css
   components/
     RetroRoom.jsx
+    ProjectComputer.jsx
     SkillsTree.jsx
     AcademicMap.jsx
     ConnectionMap.jsx
@@ -200,6 +202,7 @@ Output directory: dist
 El audio se reproduce después de una interacción del usuario porque los navegadores bloquean autoplay con sonido.
 
 Los objetos 3D recién se pueden tocar después de presionar **INICIAR**.
+Antes de entrar tampoco aparecen los marcadores interactivos ni la luz que sigue al cursor. Dentro del monitor, los objetos de la habitación quedan bloqueados hasta volver. En móvil el escritorio ocupa una vista ampliada para mantener legibles los proyectos.
 
 Los proyectos nuevos se agregan al arreglo `projects` y la paginación se adapta automáticamente. Las propiedades `image` y `video` son opcionales; `actions` puede quedar vacío si no hay enlaces públicos.
 
