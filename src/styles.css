@@ -69,6 +69,8 @@ body.is-pointing {
   transform: translateY(-18px) scale(0.98);
   pointer-events: none;
 }
+.start-screen:not(.leaving) { animation: menu-return-in 650ms ease-out; }
+@keyframes menu-return-in { from { opacity: 0; } to { opacity: 1; } }
 
 .eyebrow,
 .title-block p {
@@ -1549,4 +1551,100 @@ h2 {
   .academic-progress > span { font-size: 13px; }
   .academic-progress .degree-milestone { flex-basis: 100%; }
   .academic-toolbar .retro-select { min-width: 140px; }
+}
+
+/* The desktop is projected onto the CRT; phones use a readable full-height view. */
+.computer-desktop {
+  position: fixed;
+  inset: auto;
+  left: var(--screen-left, 10vw);
+  top: var(--screen-top, 10vh);
+  width: var(--screen-width, 80vw);
+  height: var(--screen-height, 80vh);
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: 2px solid #657f78;
+  border-radius: 3px;
+  background: #172b2c;
+  color: #eee9dc;
+  box-shadow: inset 0 0 35px #060d0e80;
+  overflow: hidden;
+  font-family: "Trebuchet MS", Arial, sans-serif;
+  letter-spacing: 0;
+}
+.computer-desktop[open] { display: flex; flex-direction: column; animation: computer-screen-in 380ms ease-out both; }
+.computer-desktop[open].is-closing { animation: computer-screen-out 280ms ease-in both; pointer-events: none; }
+@keyframes computer-screen-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes computer-screen-out { from { opacity: 1; } to { opacity: 0; } }
+.computer-desktop::backdrop { background: transparent; }
+.computer-desktop::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 3px, #00000012 3px 4px); }
+.computer-desktop button:not(.computer-folder) { border: 1px solid #779b8b; border-radius: 2px; background: #213b35; color: #eee9dc; font-family: inherit; font-weight: 700; cursor: pointer; }
+.computer-desktop button:not(.computer-folder):hover:not(:disabled) { background: #36594b; border-color: #b1d9bc; }
+.computer-desktop button:disabled { opacity: 0.4; cursor: default; }
+.computer-desktop button:focus-visible, .computer-search input:focus-visible { outline: 2px solid #f2cf78; outline-offset: 2px; }
+.computer-titlebar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #2b4946; border-bottom: 1px solid #7e9690; flex-shrink: 0; }
+.computer-titlebar h2 { font-size: 17px; line-height: 1.2; margin: 0; color: #eee9dc; flex: 1; }
+.computer-exit, .computer-address button { width: 34px; height: 32px; padding: 0; flex-shrink: 0; font-size: 22px; }
+.desktop-drive { width: 18px; height: 14px; border: 2px solid #c0d5cb; box-shadow: inset 0 -4px #738c87; }
+.computer-address { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #1a2528; border-bottom: 1px solid #4b6060; font-size: 13px; flex-shrink: 0; }
+.computer-address span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.computer-explorer { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; }
+.computer-search { display: flex; gap: 12px; align-items: center; font-size: 13px; color: #aec7c0; }
+.computer-search input { min-width: 0; width: 260px; max-width: 100%; border: 1px solid #607e76; border-radius: 2px; padding: 9px 12px; background: #101c20; color: #eee9dc; font: inherit; }
+.computer-folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 16px; align-content: start; margin-top: 28px; }
+.computer-folder { display: flex; flex-direction: column; align-items: center; gap: 12px; min-height: 155px; padding: 14px 8px; border: 1px solid transparent; border-radius: 3px; background: transparent; box-shadow: none; text-transform: none; color: #eee9dc; }
+.computer-folder strong { font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
+.computer-folder small { font-size: 12px; color: #b6c9c0; font-weight: normal; }
+.computer-folder:hover, .computer-folder:focus-visible { background: #35534b; border-color: #92bba5; transform: translateY(-2px); box-shadow: none; }
+.desktop-folder { display: block; position: relative; width: 58px; height: 40px; margin-top: 8px; background: #dbb564; border: 2px solid #f4d792; box-shadow: 3px 3px 0 #0d1d21; border-radius: 1px; flex-shrink: 0; }
+.desktop-folder::before { content: ""; position: absolute; left: -2px; top: -10px; width: 27px; height: 9px; background: #bc934d; border: 2px solid #f4d792; border-bottom: 0; }
+.desktop-folder::after { content: ""; position: absolute; left: 5px; right: 5px; top: 6px; height: 3px; background: #f6df9d; }
+.computer-statusbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 12px; border-top: 1px solid #566d67; background: #182425; font-size: 12px; flex-shrink: 0; }
+.computer-statusbar > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.computer-statusbar button { font-size: 12px; min-height: 34px; padding: 5px 10px; flex-shrink: 0; }
+.computer-file { display: grid; grid-template-columns: 1.05fr 1fr; gap: 24px; padding: 20px; min-height: 0; overflow-y: auto; flex: 1; align-items: start; align-content: start; }
+.computer-media { min-width: 0; background: #101719; border: 1px solid #526a65; }
+.computer-media img, .computer-media video { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: contain; }
+.computer-file-cover { aspect-ratio: 16 / 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 16px; text-align: center; }
+.computer-description { min-width: 0; }
+.computer-description h3 { font-size: 24px; line-height: 1.2; margin: 8px 0 14px; overflow-wrap: anywhere; }
+.computer-description p { font-size: 15px; line-height: 1.6; margin: 0 0 16px; }
+.computer-description .computer-file-status { font-size: 12px; color: #c9ae6e; margin-bottom: 6px; }
+.computer-tech { display: flex; gap: 6px 10px; flex-wrap: wrap; list-style: none; padding: 0; margin: 14px 0 20px; }
+.computer-tech li { font-size: 12px; padding: 4px 7px; color: #b6d4c8; background: #223c36; border: 1px solid #456058; }
+.computer-private { color: #a7b3ac; font-size: 12px; padding: 8px; }
+.computer-empty { grid-column: 1 / -1; font-size: 15px; }
+.computer-file, .computer-explorer { scrollbar-width: thin; scrollbar-color: #658d7a #182425; }
+.computer-return { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 12; }
+@media (max-width: 700px) {
+  .computer-desktop { inset: 12px; width: auto; height: auto; max-height: calc(100dvh - 24px); }
+  .computer-file { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
+  .computer-description h3 { font-size: 22px; }
+  .computer-search { flex-direction: column; align-items: stretch; gap: 8px; }
+  .computer-search input { width: 100%; box-sizing: border-box; }
+  .computer-folders { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .computer-folder { min-height: 155px; }
+  .computer-folder strong { font-size: 14px; }
+  .computer-statusbar { gap: 6px; padding: 7px; }
+  .computer-statusbar button { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .computer-folder:hover, .computer-folder:focus-visible { transform: none; }
+  /* Keep user-triggered navigation fades; decorative motion remains disabled. */
+  .app-shell .start-screen { transition: opacity 850ms ease, transform 850ms ease !important; }
+  .app-shell .start-screen:not(.leaving) { animation: menu-return-in 650ms ease-out !important; }
+  .app-shell .computer-desktop[open] { animation: computer-screen-in 380ms ease-out both !important; }
+  .app-shell .computer-desktop[open].is-closing { animation: computer-screen-out 280ms ease-in both !important; }
+}
+@media (max-height: 540px) {
+  .computer-desktop { inset: 12px; width: auto; height: auto; max-height: calc(100dvh - 24px); }
+  .computer-explorer { padding: 12px; }
+  .computer-folders { margin-top: 12px; gap: 8px; }
+  .computer-folder { min-height: 110px; padding: 8px; gap: 8px; }
+  .computer-folder .desktop-folder { width: 44px; height: 30px; }
+  .computer-folder strong { font-size: 14px; line-height: 1.2; }
+  .computer-folder small { font-size: 11px; }
 }

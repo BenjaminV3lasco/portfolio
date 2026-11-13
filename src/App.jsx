@@ -1,15 +1,19 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { RetroRoom } from "./components/RetroRoom.jsx";
 import { SkillsTree } from "./components/SkillsTree.jsx";
 import { CursorCompanion } from "./components/CursorCompanion.jsx";
 import { AcademicMap } from "./components/AcademicMap.jsx";
+import { ProjectComputer } from "./components/ProjectComputer.jsx";
 import { menuItems, sections } from "./data/portfolio.js";
 import * as THREE from "three";
 
 export default function App() {
   const [mode, setMode] = useState("menu");
   const [activeSection, setActiveSection] = useState(null);
+  const [computerReady, setComputerReady] = useState(false);
+  const computerSurface = useRef(null);
+  const handleComputerReady = useCallback(() => setComputerReady(true), []);
   const [hoveredSection, setHoveredSection] = useState(null);
   const [tooltip, setTooltip] = useState({ visible: false, label: "", x: 0, y: 0 });
   const [classicSection, setClassicSection] = useState("about");
@@ -36,20 +40,22 @@ export default function App() {
     [activeSection],
   );
   const currentClassicSection = sections[classicSection] ?? sections.about;
-  const canExploreObjects = mode === "explore";
+  const canExploreObjects = mode === "explore" && !activeSection;
+  const computerOpen = mode === "explore" && activeSection === "projects";
 
   useEffect(() => {
-    if (mode !== "entering") return undefined;
+    if (!computerOpen || computerReady) return;
+    function cancel(event) {
+      if (event.key === "Escape") { setActiveSection(null); setComputerReady(false); }
+    }
+    window.addEventListener("keydown", cancel);
+    return () => window.removeEventListener("keydown", cancel);
+  }, [computerOpen, computerReady]);
 
-    const finishTimer = setTimeout(() => {
-      setMode("explore");
-      playSfx("open");
-    }, 950);
-
-    return () => {
-      clearTimeout(finishTimer);
-    };
-  }, [mode]);
+  function finishEntering() {
+    setMode(current => current === "entering" ? "explore" : current);
+    playSfx("open");
+  }
 
   useEffect(() => {
     document.body.classList.toggle("is-pointing", Boolean(hoveredSection));
@@ -75,6 +81,15 @@ export default function App() {
 
   function showSection(sectionId) {
     if (!canExploreObjects) return;
+    if (sectionId === "exit") {
+      setActiveSection(null);
+      clearObjectHover();
+      setMode("menu");
+      playSfx("close");
+      return;
+    }
+    setComputerReady(false);
+    clearObjectHover();
     setActiveSection(sectionId);
     setMode("explore");
     playSfx("open");
@@ -82,6 +97,7 @@ export default function App() {
 
   function closePanel() {
     setActiveSection(null);
+    setComputerReady(false);
   }
 
   function setObjectHover(sectionId, event, labelOverride) {
@@ -231,6 +247,7 @@ export default function App() {
       <audio ref={teddyAudioRef} preload="auto" src="/audio/teddy-sound.mp3" />
 
       <Canvas
+        style={{ pointerEvents: canExploreObjects ? "auto" : "none" }}
         camera={{ position: [3.45, 1.55, 4.35], fov: 50 }}
         shadows
         dpr={[1, 1.6]}
@@ -254,14 +271,15 @@ export default function App() {
           shadow-bias={-0.00015}
         />
         <pointLight color="#8ed5ac" intensity={4.5} position={[-2.7, 2.15, -2.2]} distance={4.8} />
-        <pointLight color="#9edeb4" intensity={9} position={[0, 0.82, -2.25]} distance={2.85} />
+        <MonitorFill focused={computerOpen} />
         <pointLight color="#bacfcb" intensity={1.2} position={[-0.34, 1.45, -2.9]} distance={3.2} />
         <pointLight color="#ffce63" intensity={3.4} position={[2.5, 1.7, 0.8]} distance={4.2} />
 
         <Suspense fallback={null}>
-          <CameraRig mode={mode} />
+          <CameraRig mode={mode} computerOpen={computerOpen} onComputerReady={handleComputerReady} onRoomReady={finishEntering} computerSurface={computerSurface} />
           <RetroRoom
-            proximityEnabled={(mode === "menu" || mode === "explore") && !activeSection}
+            proximityEnabled={canExploreObjects}
+            computerOpen={computerOpen}
             activeSection={activeSection}
             hoveredSection={hoveredSection}
             onHoverSection={setObjectHover}
@@ -306,7 +324,15 @@ export default function App() {
         <p className="explore-hint">Hacé clic en los objetos para explorar</p>
       )}
 
-      {mode === "explore" && currentSection && (
+      {computerOpen && !computerReady && (
+        <button className="computer-return" type="button" data-sfx="close" onClick={closePanel}>↩ Volver a la habitación</button>
+      )}
+
+      {computerOpen && computerReady && (
+        <ProjectComputer projects={sections.projects.projects} surfaceRef={computerSurface} onClose={() => { closePanel(); playSfx("close"); }} />
+      )}
+
+      {mode === "explore" && currentSection && !computerOpen && (
         <section className={`interface-panel ${activeSection === "projects" ? "projects-panel" : ""} ${activeSection === "skills" ? "skills-panel" : ""}`} aria-live="polite">
           <button className="panel-close" type="button" data-sfx="close" onClick={closePanel} aria-label="Cerrar panel">
             X
@@ -354,18 +380,18 @@ export default function App() {
       )}
 
       {tooltip.visible && (
-        <div className="object-tooltip" style={{ left: tooltip.x, top: tooltip.y }}>
+        <div className="object-tooltip" style={{ left: Math.max(0, Math.min(tooltip.x, window.innerWidth - 220)), top: Math.max(0, Math.min(tooltip.y, window.innerHeight - 85)), maxWidth: 180 }}>
           {tooltip.label}
         </div>
       )}
 
-      {mode === "explore" && (
+      {mode === "explore" && !computerOpen && (
         <button className="classic-toggle" type="button" data-sfx="open" onClick={() => setMode("classic")}>
           MODO CLÁSICO
         </button>
       )}
 
-      <div className="audio-controls" role="group" aria-label="Audio">
+      <div className="audio-controls" role="group" aria-label="Audio" style={{ display: computerOpen ? "none" : undefined }}>
       <button className={`sound-toggle effects-toggle ${effectsEnabled ? "playing" : ""}`} type="button"
         data-sfx="none" aria-pressed={effectsEnabled} title="Efectos de interacción"
         aria-label={effectsEnabled ? "Desactivar efectos de sonido" : "Activar efectos de sonido"} onClick={toggleEffects}>
@@ -388,7 +414,7 @@ export default function App() {
       </div>
 
       <div className="crt-overlay" aria-hidden="true" />
-      <CursorCompanion interactive={hoveredSection} />
+      {((mode === "explore" && !computerReady) || mode === "classic") && <CursorCompanion interactive={hoveredSection} />}
     </main>
   );
 }
@@ -580,10 +606,28 @@ function SectionDetails({ section, onSound }) {
   );
 }
 
-function CameraRig({ mode }) {
+function MonitorFill({ focused }) {
+  const light = useRef();
+  useFrame((_, delta) => {
+    light.current.intensity = THREE.MathUtils.damp(light.current.intensity, focused ? 1.8 : 9, 3, Math.min(delta, 0.1));
+  });
+  return <pointLight ref={light} color="#9edeb4" intensity={9} position={[0, 0.82, -2.25]} distance={2.85} />;
+}
+
+function CameraRig({ mode, computerOpen, onComputerReady, onRoomReady, computerSurface }) {
   const { camera, size, scene } = useThree();
   const target = useRef(new THREE.Vector3(0, 0.15, -2.05));
   const framedPosition = useMemo(() => new THREE.Vector3(), []);
+  const monitorTarget = useMemo(() => new THREE.Vector3(0, 0.36, -2.589), []);
+  const monitorPosition = useMemo(() => new THREE.Vector3(), []);
+  const cornerA = useMemo(() => new THREE.Vector3(), []);
+  const cornerB = useMemo(() => new THREE.Vector3(), []);
+  const notified = useRef(false);
+  const roomNotified = useRef(false);
+  const travel = useRef({
+    key: "", elapsed: 0, duration: 1.4,
+    position: new THREE.Vector3(), target: new THREE.Vector3(), fov: 50,
+  });
 
   const cameraProfile = useMemo(() => {
     const aspect = size.width / Math.max(size.height, 1);
@@ -643,14 +687,62 @@ function CameraRig({ mode }) {
 
   useFrame((_, delta) => {
     const destination = mode === "menu" ? cameraProfile.menu : cameraProfile.explore;
-    const lookTarget = mode === "menu" ? cameraProfile.menuTarget : cameraProfile.exploreTarget;
+    const lookTarget = computerOpen ? monitorTarget : mode === "menu" ? cameraProfile.menuTarget : cameraProfile.exploreTarget;
     framedPosition.copy(destination);
-    const blend = 1 - Math.exp(-(mode === "entering" ? 2.2 : 5) * Math.min(delta, 0.1));
-    camera.position.lerp(framedPosition, blend);
-    camera.fov = THREE.MathUtils.lerp(camera.fov, cameraProfile.fov, blend);
+    if (mode !== "menu" && size.width >= 900) {
+      framedPosition.lerp(lookTarget, 0.1);
+    }
+    let fov = cameraProfile.fov;
+    if (computerOpen) {
+      fov = 40;
+      const aspect = size.width / Math.max(size.height, 1);
+      const distance = Math.max(0.43, 0.68 / aspect) / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)) * 0.67);
+      monitorPosition.copy(monitorTarget);
+      monitorPosition.z += distance;
+      framedPosition.copy(monitorPosition);
+    } else {
+      notified.current = false;
+    }
+    // Capture the current pose, including mid-flight reversals, before easing to a new view.
+    const view = computerOpen ? "computer" : mode === "menu" ? "menu" : "room";
+    const key = `${view}:${size.width}:${size.height}`;
+    const motion = travel.current;
+    if (motion.key !== key) {
+      motion.key = key;
+      motion.elapsed = 0;
+      motion.duration = computerOpen ? 2.4 : 2;
+      roomNotified.current = false;
+      motion.position.copy(camera.position);
+      motion.target.copy(target.current);
+      motion.fov = camera.fov;
+    }
+    motion.elapsed += Math.min(delta, 0.1);
+    // Camera travel is an intentional navigation action, never a one-frame teleport.
+    const progress = Math.min(motion.elapsed / motion.duration, 1);
+    const eased = progress * progress * progress * (progress * (progress * 6 - 15) + 10);
+    camera.position.lerpVectors(motion.position, framedPosition, eased);
+    camera.fov = THREE.MathUtils.lerp(motion.fov, fov, eased);
     camera.updateProjectionMatrix();
-    target.current.lerp(lookTarget, blend);
+    target.current.lerpVectors(motion.target, lookTarget, eased);
     camera.lookAt(target.current);
+    if (mode === "entering" && progress === 1 && !roomNotified.current) {
+      roomNotified.current = true;
+      onRoomReady();
+    }
+    if (computerOpen && !notified.current && progress === 1) {
+      notified.current = true;
+      onComputerReady();
+    }
+    if (computerOpen && computerSurface.current && size.width > 700) {
+      camera.updateMatrixWorld();
+      cornerA.set(-0.34, 0.575, -2.589).project(camera);
+      cornerB.set(0.34, 0.145, -2.589).project(camera);
+      const style = computerSurface.current.style;
+      style.setProperty("--screen-left", `${(cornerA.x + 1) * size.width / 2}px`);
+      style.setProperty("--screen-top", `${(1 - cornerA.y) * size.height / 2}px`);
+      style.setProperty("--screen-width", `${(cornerB.x - cornerA.x) * size.width / 2}px`);
+      style.setProperty("--screen-height", `${(cornerA.y - cornerB.y) * size.height / 2}px`);
+    }
     if (scene.fog) {
       const distance = camera.position.distanceTo(target.current);
       scene.fog.near = Math.max(4, distance - 3);
