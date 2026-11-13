@@ -203,8 +203,8 @@ export const sections = {
   contact: {
     label: "CONTACTO",
     title: "TERMINAL DE CONTACTO",
-    subtitle: "Canal abierto",
-    body: "Elegir un canal para abrir una línea directa.",
+    subtitle: "¿Querés que trabajemos juntos?",
+    body: "Si tenés un proyecto, una propuesta o simplemente querés charlar sobre desarrollo, escribime. Podés contactarme por correo o LinkedIn, y conocer más de mi trabajo en GitHub.",
     lines: [],
     links: [
       {
