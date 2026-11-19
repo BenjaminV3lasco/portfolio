@@ -98,6 +98,7 @@ dist/
 `src/data/roomNavigation.js` define los encuadres de los objetos en coordenadas globales. `FocusedPanel.jsx` muestra el contenido después del acercamiento y permite volver con el botón de cierre o Escape. La PC conserva su escritorio dentro del monitor. Durante los recorridos no se pueden activar otros objetos.
 
 Los objetos se centran en el espacio libre junto al panel, sin cambiar el ángulo frontal para compensar su ancho. La nariz del osito solo reproduce el sonido, sin mover la cámara.
+La puerta EXIT vuelve directamente al encuadre del menú con una transición suave, sin acercarse primero a la puerta.
 
 Para comprobar los encuadres en diez resoluciones y la curva de movimiento: `node check-navigation.mjs`.
 

@@ -9,7 +9,6 @@ export const objectViews = {
   education: { target: [1.55, 0.9, -3.4], direction: [0, 0.02, 1], width: 1.46, height: 1.04 },
   contact: { target: [deskItems.phone.x, -0.03, deskItems.phone.z], direction: [0.08, 1.1, 1], width: 0.86, height: 0.66 },
   cv: { target: [deskItems.folder.x, -0.135, deskItems.folder.z], direction: [0.05, 1.6, 1], width: 0.86, height: 0.58 },
-  exit: { target: [2.95, -0.02, -3.53], direction: [-0.12, 0.03, 1], width: 1.2, height: 2.5 },
 };
 
 export function getObjectFrame(sectionId, width, height) {
@@ -21,7 +20,7 @@ export function getObjectFrame(sectionId, width, height) {
   const tangent = Math.tan(THREE.MathUtils.degToRad(fov / 2));
   const center = new THREE.Vector3(...view.target);
   const direction = new THREE.Vector3(...view.direction).normalize();
-  const fullView = ["projects", "exit"].includes(sectionId);
+  const fullView = sectionId === "projects";
   // Match .focused-panel: 52vw (max 860px) on desktop, bottom 62% on mobile.
   const panelLeft = width - Math.min(width * 0.52, 860) - 24;
   const area = fullView ? { x: 0, y: 0, width, height }

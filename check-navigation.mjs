@@ -36,6 +36,7 @@ for (const [width, height] of sizes) {
 }
 assert.equal(getObjectFrame("missing", 1366, 768), null);
 assert.equal(getObjectFrame("teddy", 1366, 768), null, "the teddy sound must not have a camera destination");
+assert.equal(getObjectFrame("exit", 1366, 768), null, "EXIT must return to the menu without a door close-up");
 assert.equal(easeCameraTravel(0), 0);
 assert.equal(easeCameraTravel(1), 1);
 assert.equal(easeCameraTravel(0.5), 0.5);

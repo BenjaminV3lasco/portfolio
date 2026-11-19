@@ -20,14 +20,7 @@ export default function App() {
   const phoneSurface = useRef(null);
   const phoneInteraction = useRef({ hovered: null, focused: null, pressed: null });
   const phoneTone = useRef(null);
-  const handleViewReady = useCallback((sectionId) => {
-    if (sectionId === "exit") {
-      setActiveSection(null);
-      setMode("menu");
-    } else {
-      setViewReady(true);
-    }
-  }, []);
+  const handleViewReady = useCallback(() => setViewReady(true), []);
   const [hoveredSection, setHoveredSection] = useState(null);
   const [tooltip, setTooltip] = useState({ visible: false, label: "", x: 0, y: 0 });
   const [classicSection, setClassicSection] = useState("about");
@@ -94,6 +87,14 @@ export default function App() {
 
   function showSection(sectionId) {
     if (!canExploreObjects) return;
+    if (sectionId === "exit") {
+      setViewReady(false);
+      clearObjectHover();
+      setActiveSection(null);
+      setMode("menu");
+      playSfx("close");
+      return;
+    }
     if (!objectViews[sectionId]) return;
     setViewReady(false);
     clearObjectHover();
