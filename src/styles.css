@@ -1152,8 +1152,11 @@ h2 {
   border-bottom: 2px solid transparent;
   background: transparent;
   color: #d0c3ae;
-  font-size: 0.78rem;
+  font-family: inherit;
+  font-size: 0.85rem;
   font-weight: 800;
+  line-height: 1.4;
+  text-transform: uppercase;
   cursor: pointer;
 }
 .profile-tabs button[aria-selected="true"] {
@@ -1428,7 +1431,8 @@ h2 {
 .university-name { font-size: 1rem; line-height: 1.5; margin: 0 0 12px; color: #e9eee8; }
 .university-name strong { display: block; color: #7fe6a3; font-size: 0.9375rem; }
 .fact-card > small { display: block; margin-top: 6px; color: #9ddcb4; }
-.cursor-light { position: fixed; top: 0; left: 0; width: 0; height: 0; z-index: 1000; pointer-events: none; opacity: 0; }
+.cursor-light { position: fixed; inset: 0 auto auto 0; width: 0; height: 0; margin: 0; padding: 0; border: 0; overflow: visible; background: transparent; z-index: 1000; pointer-events: none; opacity: 0; }
+.cursor-light::backdrop { background: transparent; pointer-events: none; }
 .cursor-light[data-visible="true"] { opacity: 1; }
 .cursor-light span { position: absolute; top: -4px; left: -4px; width: 8px; height: 8px; border-radius: 50%; background: #d4ffd9; box-shadow: 0 0 12px 5px #8bffb0aa, 0 0 36px 16px #63f28a38; }
 .cursor-light[data-control="true"] span, .cursor-light[data-interactive="true"] span { background: #fff2c2; box-shadow: 0 0 12px 5px #ffce63aa, 0 0 38px 18px #ffce6338; }
@@ -1618,8 +1622,62 @@ h2 {
 .computer-private { color: #a7b3ac; font-size: 12px; padding: 8px; }
 .computer-empty { grid-column: 1 / -1; font-size: 15px; }
 .computer-file, .computer-explorer { scrollbar-width: thin; scrollbar-color: #658d7a #182425; }
-.computer-return { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 12; }
-@media (max-width: 700px) {
+.room-return {
+  position: fixed; top: 20px; left: 20px; z-index: 12;
+  display: inline-flex; align-items: center; gap: 12px;
+  min-height: 44px; padding: 10px 16px;
+  border: 1px solid #759b85; border-radius: 4px;
+  background: #171d1bf2; color: #eee9dc; font: 700 14px "Trebuchet MS", Arial, sans-serif;
+  box-shadow: 0 4px 18px #0005; cursor: pointer;
+  transition: border-color 160ms, background 160ms;
+}
+.room-return span:first-child { font-size: 22px; line-height: 1; }
+.room-return:hover { background: #263c30; border-color: #a1dfb1; }
+.room-return:focus-visible { outline: 2px solid #f2cf78; outline-offset: 3px; }
+.interface-panel.focused-panel {
+  position: fixed; inset: 24px 24px 24px auto; margin: 0;
+  width: min(52vw, 860px); max-width: none; height: auto; max-height: none;
+  padding: 0; border: 1px solid #577465; border-radius: 6px;
+  background: #141b19f5; color: #f2eadb; overflow: hidden;
+  box-shadow: 0 20px 60px #0007;
+}
+.focused-panel[open] { display: flex; flex-direction: column; animation: focused-panel-in 320ms ease-out both; }
+.focused-panel[open].is-closing { animation: focused-panel-out 240ms ease-in both; pointer-events: none; }
+.focused-panel::backdrop { background: #0b101214; }
+.interface-panel.focused-contact { z-index: 12; }
+.phone-keypad { position: fixed; inset: 0; z-index: 11; pointer-events: none; }
+.phone-keypad button {
+  position: absolute; left: 0; top: 0; visibility: hidden;
+  padding: 0; border: 1px solid transparent; border-radius: 2px;
+  background: transparent; pointer-events: auto; cursor: pointer;
+}
+.phone-keypad button:is(:hover, :focus-visible) { border-color: #b4e49d; background: #b5ef8a1c; box-shadow: 0 0 9px #7bd66c50; }
+.phone-keypad button:focus-visible { outline: 2px solid #ffce63; outline-offset: 2px; }
+.focused-heading { position: relative; padding: 22px 24px 18px; border-bottom: 1px solid #3b4c43; flex-shrink: 0; }
+.focused-heading .eyebrow { margin-bottom: 12px; }
+.focused-heading h1 { font-size: 30px; line-height: 1.1; margin: 0 0 10px; text-shadow: 2px 2px #080d0b; padding-right: 22px; }
+.focused-heading h2 { font-size: 14px; line-height: 1.5; margin: 0; }
+.focused-content { padding: 20px 24px 24px; overflow-y: auto; overflow-x: hidden; min-height: 0; scrollbar-width: thin; scrollbar-color: #658d7a #182425; }
+.focused-intro { margin: 0 0 20px; font-size: 16px; line-height: 1.65; color: #d0c9b9; }
+.focused-panel .profile-content { max-height: none; overflow: visible; }
+.focused-panel .tree-canvas { height: min(40dvh, 380px); min-height: 260px; }
+.focused-panel .panel-close { width: 36px; height: 36px; top: 12px; right: 12px; font-size: 24px; }
+@keyframes focused-panel-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes focused-panel-out { from { opacity: 1; } to { opacity: 0; } }
+@media (max-width: 760px), (max-height: 540px) {
+  .interface-panel.focused-panel { inset: 38% 12px 12px; width: auto; max-width: none; max-height: none; }
+  .focused-heading { padding: 14px 16px; }
+  .focused-heading h1 { font-size: 22px; padding-right: 30px; }
+  .focused-heading .eyebrow { margin-bottom: 8px; }
+  .focused-heading h2 { font-size: 12px; }
+  .focused-content { padding: 16px; }
+  .room-return { top: 12px; left: 12px; font-size: 13px; padding: 8px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .focused-panel[open] { animation: computer-screen-in 320ms ease-out both !important; }
+  .app-shell .focused-panel[open].is-closing { animation: focused-panel-out 240ms ease-in both !important; }
+}
+@media (max-width: 760px) {
   .computer-desktop { inset: 12px; width: auto; height: auto; max-height: calc(100dvh - 24px); }
   .computer-file { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
   .computer-description h3 { font-size: 22px; }

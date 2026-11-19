@@ -17,6 +17,7 @@ export function CursorCompanion({ interactive }) {
       visible = false;
       marker.dataset.visible = "false";
       marker.dataset.pressed = "false";
+      if (marker.matches(":popover-open")) marker.hidePopover();
       cancelAnimationFrame(frame);
       frame = 0;
     }
@@ -31,9 +32,14 @@ export function CursorCompanion({ interactive }) {
 
     function move(event) {
       if (event.pointerType !== "mouse" && event.pointerType !== "pen") { hide(); return; }
+      const dialogs = [...document.querySelectorAll("dialog[open]")];
+      const activeDialog = dialogs.filter(dialog => dialog.matches(":modal")).at(-1) ?? dialogs.at(-1);
+      if ((marker.closest("dialog") ?? null) !== (activeDialog ?? null)) { hide(); return; }
       targetX = event.clientX;
       targetY = event.clientY;
       if (!visible) { x = targetX; y = targetY; }
+      // The top layer keeps viewport coordinates independent of panel filters and transforms.
+      if (!visible) marker.showPopover();
       visible = true;
       marker.dataset.visible = "true";
       const control = event.target.closest?.("button:not(:disabled), a[href], summary");
@@ -42,7 +48,15 @@ export function CursorCompanion({ interactive }) {
       if (!frame) frame = requestAnimationFrame(draw);
     }
 
-    function press() { if (visible) marker.dataset.pressed = "true"; }
+    function press(event) {
+      move(event);
+      if (visible) {
+        x = targetX;
+        y = targetY;
+        marker.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        marker.dataset.pressed = "true";
+      }
+    }
     function release() { marker.dataset.pressed = "false"; }
     function visibility() { if (document.hidden) hide(); }
     window.addEventListener("pointermove", move, { passive: true });
@@ -50,6 +64,7 @@ export function CursorCompanion({ interactive }) {
     window.addEventListener("pointerup", release, { passive: true });
     window.addEventListener("pointercancel", release);
     window.addEventListener("blur", hide);
+    window.addEventListener("keydown", hide);
     document.documentElement.addEventListener("pointerleave", hide);
     document.addEventListener("visibilitychange", visibility);
     reducedMotion.addEventListener("change", hide);
@@ -60,11 +75,12 @@ export function CursorCompanion({ interactive }) {
       window.removeEventListener("pointerup", release);
       window.removeEventListener("pointercancel", release);
       window.removeEventListener("blur", hide);
+      window.removeEventListener("keydown", hide);
       document.documentElement.removeEventListener("pointerleave", hide);
       document.removeEventListener("visibilitychange", visibility);
       reducedMotion.removeEventListener("change", hide);
     };
   }, []);
 
-  return <div ref={markerRef} className="cursor-light" data-interactive={Boolean(interactive)} aria-hidden="true"><span /></div>;
+  return <div ref={markerRef} popover="manual" className="cursor-light" data-interactive={Boolean(interactive)} aria-hidden="true"><span /></div>;
 }

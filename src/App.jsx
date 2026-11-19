@@ -5,15 +5,29 @@ import { SkillsTree } from "./components/SkillsTree.jsx";
 import { CursorCompanion } from "./components/CursorCompanion.jsx";
 import { AcademicMap } from "./components/AcademicMap.jsx";
 import { ProjectComputer } from "./components/ProjectComputer.jsx";
+import { FocusedPanel } from "./components/FocusedPanel.jsx";
+import { PhoneKeypad } from "./components/PhoneKeypad.jsx";
+import { deskItems, phoneKeys } from "./data/deskLayout.js";
+import { objectViews, getObjectFrame, easeCameraTravel } from "./data/roomNavigation.js";
 import { menuItems, sections } from "./data/portfolio.js";
 import * as THREE from "three";
 
 export default function App() {
   const [mode, setMode] = useState("menu");
   const [activeSection, setActiveSection] = useState(null);
-  const [computerReady, setComputerReady] = useState(false);
+  const [viewReady, setViewReady] = useState(false);
   const computerSurface = useRef(null);
-  const handleComputerReady = useCallback(() => setComputerReady(true), []);
+  const phoneSurface = useRef(null);
+  const phoneInteraction = useRef({ hovered: null, focused: null, pressed: null });
+  const phoneTone = useRef(null);
+  const handleViewReady = useCallback((sectionId) => {
+    if (sectionId === "exit") {
+      setActiveSection(null);
+      setMode("menu");
+    } else {
+      setViewReady(true);
+    }
+  }, []);
   const [hoveredSection, setHoveredSection] = useState(null);
   const [tooltip, setTooltip] = useState({ visible: false, label: "", x: 0, y: 0 });
   const [classicSection, setClassicSection] = useState("about");
@@ -44,17 +58,16 @@ export default function App() {
   const computerOpen = mode === "explore" && activeSection === "projects";
 
   useEffect(() => {
-    if (!computerOpen || computerReady) return;
+    if (!activeSection || (viewReady && currentSection)) return;
     function cancel(event) {
-      if (event.key === "Escape") { setActiveSection(null); setComputerReady(false); }
+      if (event.key === "Escape") { closePanel(); playSfx("close"); }
     }
     window.addEventListener("keydown", cancel);
     return () => window.removeEventListener("keydown", cancel);
-  }, [computerOpen, computerReady]);
+  }, [activeSection, viewReady, currentSection]);
 
   function finishEntering() {
-    setMode(current => current === "entering" ? "explore" : current);
-    playSfx("open");
+    setMode(current => current === "entering" || current === "returning" ? "explore" : current);
   }
 
   useEffect(() => {
@@ -81,14 +94,8 @@ export default function App() {
 
   function showSection(sectionId) {
     if (!canExploreObjects) return;
-    if (sectionId === "exit") {
-      setActiveSection(null);
-      clearObjectHover();
-      setMode("menu");
-      playSfx("close");
-      return;
-    }
-    setComputerReady(false);
+    if (!objectViews[sectionId]) return;
+    setViewReady(false);
     clearObjectHover();
     setActiveSection(sectionId);
     setMode("explore");
@@ -97,7 +104,8 @@ export default function App() {
 
   function closePanel() {
     setActiveSection(null);
-    setComputerReady(false);
+    setViewReady(false);
+    setMode("returning");
   }
 
   function setObjectHover(sectionId, event, labelOverride) {
@@ -185,6 +193,43 @@ export default function App() {
     }
   }
 
+  async function playPhoneTone(digit) {
+    const key = phoneKeys.find(item => item.digit === digit);
+    if (!key || !effectsEnabledRef.current) return;
+    try {
+      const context = getAudioContext();
+      if (context.state === "suspended") await context.resume();
+      if (!effectsEnabledRef.current || context.state !== "running") return;
+      const now = context.currentTime;
+      phoneTone.current?.stop();
+      const gain = context.createGain();
+      gain.connect(effectsGainRef.current);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.025, now + 0.008);
+      gain.gain.setValueAtTime(0.025, now + 0.105);
+      gain.gain.linearRampToValueAtTime(0, now + 0.14);
+      const oscillators = key.frequencies.map(frequency => {
+        const oscillator = context.createOscillator();
+        oscillator.frequency.value = frequency;
+        oscillator.type = "sine";
+        oscillator.connect(gain);
+        oscillator.start(now);
+        oscillator.stop(now + 0.15);
+        return oscillator;
+      });
+      const tone = { stop: () => {
+        gain.gain.cancelScheduledValues(context.currentTime);
+        gain.gain.setTargetAtTime(0, context.currentTime, 0.005);
+      } };
+      phoneTone.current = tone;
+      oscillators[0].onended = () => {
+        oscillators.forEach(oscillator => oscillator.disconnect());
+        gain.disconnect();
+        if (phoneTone.current === tone) phoneTone.current = null;
+      };
+    } catch { /* Optional audio must not interrupt navigation. */ }
+  }
+
   function toggleEffects() {
     const enabled = !effectsEnabledRef.current;
     effectsEnabledRef.current = enabled;
@@ -214,7 +259,7 @@ export default function App() {
 
   function handleInterfaceHover(event) {
     const control = interactiveControl(event.target);
-    if (!control || control.contains(event.relatedTarget)) return;
+    if (!control || control.dataset.sfx === "none" || control.contains(event.relatedTarget)) return;
     if (event.type === "focus" && !control.matches(":focus-visible")) return;
     if (event.pointerType && event.pointerType !== "mouse") return;
     playSfx("hover");
@@ -255,11 +300,11 @@ export default function App() {
       >
         <color attach="background" args={["#171419"]} />
         <fog attach="fog" args={["#171419", 5, 13]} />
-        <ambientLight intensity={0.65} />
-        <hemisphereLight args={["#c4d3e0", "#64504a", 0.3]} />
+        <ambientLight intensity={0.48} />
+        <hemisphereLight args={["#d2e0e4", "#51484a", 0.5]} />
         <directionalLight
           castShadow
-          intensity={1.6}
+          intensity={1.9}
           color="#fff0dc"
           position={[3.2, 5.2, 3.4]}
           shadow-mapSize={[2048, 2048]}
@@ -269,17 +314,20 @@ export default function App() {
           shadow-camera-bottom={-6}
           shadow-normalBias={0.025}
           shadow-bias={-0.00015}
+          shadow-radius={2.5}
         />
-        <pointLight color="#8ed5ac" intensity={4.5} position={[-2.7, 2.15, -2.2]} distance={4.8} />
+        <pointLight color="#c4dfce" intensity={2.8} position={[-2.7, 2.15, -2.2]} distance={4.8} />
         <MonitorFill focused={computerOpen} />
         <pointLight color="#bacfcb" intensity={1.2} position={[-0.34, 1.45, -2.9]} distance={3.2} />
-        <pointLight color="#ffce63" intensity={3.4} position={[2.5, 1.7, 0.8]} distance={4.2} />
+        <pointLight color="#f5cd9d" intensity={3} position={[2.5, 1.7, 0.8]} distance={4.2} />
+        <InspectionLight sectionId={activeSection} />
 
         <Suspense fallback={null}>
-          <CameraRig mode={mode} computerOpen={computerOpen} onComputerReady={handleComputerReady} onRoomReady={finishEntering} computerSurface={computerSurface} />
+          <CameraRig mode={mode} activeSection={activeSection} onViewReady={handleViewReady} onRoomReady={finishEntering} computerSurface={computerSurface} />
           <RetroRoom
+            phoneSurface={phoneSurface}
+            phoneInteraction={phoneInteraction}
             proximityEnabled={canExploreObjects}
-            computerOpen={computerOpen}
             activeSection={activeSection}
             hoveredSection={hoveredSection}
             onHoverSection={setObjectHover}
@@ -320,30 +368,28 @@ export default function App() {
         </section>
       )}
 
-      {mode === "explore" && !currentSection && (
+      {canExploreObjects && (
         <p className="explore-hint">Hacé clic en los objetos para explorar</p>
       )}
 
-      {computerOpen && !computerReady && (
-        <button className="computer-return" type="button" data-sfx="close" onClick={closePanel}>↩ Volver a la habitación</button>
+      {activeSection && !viewReady && (
+        <button className="room-return" type="button" data-sfx="close" onClick={closePanel}>
+          <span aria-hidden="true">←</span><span>Volver a la habitación</span>
+        </button>
       )}
 
-      {computerOpen && computerReady && (
+      {computerOpen && viewReady && (
         <ProjectComputer projects={sections.projects.projects} surfaceRef={computerSurface} onClose={() => { closePanel(); playSfx("close"); }} />
       )}
 
-      {mode === "explore" && currentSection && !computerOpen && (
-        <section className={`interface-panel ${activeSection === "projects" ? "projects-panel" : ""} ${activeSection === "skills" ? "skills-panel" : ""}`} aria-live="polite">
-          <button className="panel-close" type="button" data-sfx="close" onClick={closePanel} aria-label="Cerrar panel">
-            X
-          </button>
-          <p className="eyebrow">{currentSection.label}</p>
-          <h1>{currentSection.title}</h1>
-          <h2>{currentSection.subtitle}</h2>
-          {currentSection.body && !currentSection.experience && <p>{currentSection.body}</p>}
+      {mode === "explore" && currentSection && !computerOpen && viewReady && (
+        <FocusedPanel section={currentSection} sectionId={activeSection} onClose={closePanel}>
           <SectionDetails key={activeSection} section={currentSection} onSound={playSfx} />
-      </section>
+        </FocusedPanel>
       )}
+
+      {mode === "explore" && activeSection === "contact" && viewReady &&
+        <PhoneKeypad surfaceRef={phoneSurface} interaction={phoneInteraction} onPress={playPhoneTone} />}
 
       {mode === "classic" && (
         <section className={`interface-panel classic-panel ${classicSection === "projects" ? "projects-panel" : ""} ${classicSection === "skills" ? "skills-panel" : ""}`} aria-live="polite">
@@ -385,13 +431,13 @@ export default function App() {
         </div>
       )}
 
-      {mode === "explore" && !computerOpen && (
+      {canExploreObjects && (
         <button className="classic-toggle" type="button" data-sfx="open" onClick={() => setMode("classic")}>
           MODO CLÁSICO
         </button>
       )}
 
-      <div className="audio-controls" role="group" aria-label="Audio" style={{ display: computerOpen ? "none" : undefined }}>
+      <div className="audio-controls" role="group" aria-label="Audio" style={{ display: activeSection ? "none" : undefined }}>
       <button className={`sound-toggle effects-toggle ${effectsEnabled ? "playing" : ""}`} type="button"
         data-sfx="none" aria-pressed={effectsEnabled} title="Efectos de interacción"
         aria-label={effectsEnabled ? "Desactivar efectos de sonido" : "Activar efectos de sonido"} onClick={toggleEffects}>
@@ -414,7 +460,7 @@ export default function App() {
       </div>
 
       <div className="crt-overlay" aria-hidden="true" />
-      {((mode === "explore" && !computerReady) || mode === "classic") && <CursorCompanion interactive={hoveredSection} />}
+      {(canExploreObjects || mode === "classic") && <CursorCompanion interactive={hoveredSection} />}
     </main>
   );
 }
@@ -452,7 +498,7 @@ function ProfileDetails({ section, onSound }) {
       </div>
       <div id="profile-content" className="profile-content" role="tabpanel" tabIndex={0} aria-labelledby={`profile-tab-${view}`}>
         {view === "profile" && <p>{section.body}</p>}
-        {view === "facts" && <SectionDetails section={{ lines: [], facts: section.facts }} />}
+        {view === "facts" && <SectionDetails section={{ label: section.label, lines: [], facts: section.facts }} />}
         {view === "experience" && (
           <>
             <div className="company-selector" role="group" aria-label="Empresa">
@@ -609,24 +655,38 @@ function SectionDetails({ section, onSound }) {
 function MonitorFill({ focused }) {
   const light = useRef();
   useFrame((_, delta) => {
-    light.current.intensity = THREE.MathUtils.damp(light.current.intensity, focused ? 1.8 : 9, 3, Math.min(delta, 0.1));
+    light.current.intensity = THREE.MathUtils.damp(light.current.intensity, focused ? 1.2 : 5.5, 3, Math.min(delta, 0.1));
   });
-  return <pointLight ref={light} color="#9edeb4" intensity={9} position={[0, 0.82, -2.25]} distance={2.85} />;
+  return <pointLight ref={light} color="#b6dfc3" intensity={5.5} position={[0, 0.82, -2.25]} distance={2.85} />;
 }
 
-function CameraRig({ mode, computerOpen, onComputerReady, onRoomReady, computerSurface }) {
+function InspectionLight({ sectionId }) {
+  const light = useRef();
+  const destination = useMemo(() => {
+    const view = objectViews[sectionId];
+    return view ? new THREE.Vector3(...view.target).addScaledVector(new THREE.Vector3(...view.direction).normalize(), 1.25).add(new THREE.Vector3(0, 0.5, 0)) : null;
+  }, [sectionId]);
+  useFrame((_, delta) => {
+    const step = Math.min(delta, 0.1);
+    if (destination) light.current.position.lerp(destination, 1 - Math.exp(-3 * step));
+    light.current.intensity = THREE.MathUtils.damp(light.current.intensity, destination && sectionId !== "projects" ? 1.4 : 0, 3, step);
+  });
+  return <pointLight ref={light} position={[0, 1, 0]} intensity={0} color="#f1e5d2" distance={2.8} />;
+}
+
+function CameraRig({ mode, activeSection, onViewReady, onRoomReady, computerSurface }) {
   const { camera, size, scene } = useThree();
+  const computerOpen = activeSection === "projects";
   const target = useRef(new THREE.Vector3(0, 0.15, -2.05));
   const framedPosition = useMemo(() => new THREE.Vector3(), []);
-  const monitorTarget = useMemo(() => new THREE.Vector3(0, 0.36, -2.589), []);
-  const monitorPosition = useMemo(() => new THREE.Vector3(), []);
+  const objectFrame = useMemo(() => getObjectFrame(activeSection, size.width, size.height), [activeSection, size.width, size.height]);
   const cornerA = useMemo(() => new THREE.Vector3(), []);
   const cornerB = useMemo(() => new THREE.Vector3(), []);
   const notified = useRef(false);
   const roomNotified = useRef(false);
   const travel = useRef({
     key: "", elapsed: 0, duration: 1.4,
-    position: new THREE.Vector3(), target: new THREE.Vector3(), fov: 50,
+    position: new THREE.Vector3(), target: new THREE.Vector3(), offset: new THREE.Vector2(), fov: 50,
   });
 
   const cameraProfile = useMemo(() => {
@@ -687,56 +747,56 @@ function CameraRig({ mode, computerOpen, onComputerReady, onRoomReady, computerS
 
   useFrame((_, delta) => {
     const destination = mode === "menu" ? cameraProfile.menu : cameraProfile.explore;
-    const lookTarget = computerOpen ? monitorTarget : mode === "menu" ? cameraProfile.menuTarget : cameraProfile.exploreTarget;
+    const lookTarget = objectFrame?.target ?? (mode === "menu" ? cameraProfile.menuTarget : cameraProfile.exploreTarget);
     framedPosition.copy(destination);
     if (mode !== "menu" && size.width >= 900) {
       framedPosition.lerp(lookTarget, 0.1);
     }
     let fov = cameraProfile.fov;
-    if (computerOpen) {
-      fov = 40;
-      const aspect = size.width / Math.max(size.height, 1);
-      const distance = Math.max(0.43, 0.68 / aspect) / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)) * 0.67);
-      monitorPosition.copy(monitorTarget);
-      monitorPosition.z += distance;
-      framedPosition.copy(monitorPosition);
-    } else {
-      notified.current = false;
+    if (objectFrame) {
+      fov = objectFrame.fov;
+      framedPosition.copy(objectFrame.position);
     }
     // Capture the current pose, including mid-flight reversals, before easing to a new view.
-    const view = computerOpen ? "computer" : mode === "menu" ? "menu" : "room";
+    const view = activeSection ?? (mode === "menu" ? "menu" : "room");
     const key = `${view}:${size.width}:${size.height}`;
     const motion = travel.current;
     if (motion.key !== key) {
       motion.key = key;
       motion.elapsed = 0;
-      motion.duration = computerOpen ? 2.4 : 2;
+      motion.duration = computerOpen ? 2.4 : activeSection ? 1.9 : 2;
+      notified.current = false;
       roomNotified.current = false;
       motion.position.copy(camera.position);
       motion.target.copy(target.current);
       motion.fov = camera.fov;
+      motion.offset.set(camera.view?.enabled ? camera.view.offsetX / camera.view.fullWidth : 0,
+        camera.view?.enabled ? camera.view.offsetY / camera.view.fullHeight : 0);
     }
     motion.elapsed += Math.min(delta, 0.1);
     // Camera travel is an intentional navigation action, never a one-frame teleport.
     const progress = Math.min(motion.elapsed / motion.duration, 1);
-    const eased = progress * progress * progress * (progress * (progress * 6 - 15) + 10);
+    const eased = easeCameraTravel(progress);
     camera.position.lerpVectors(motion.position, framedPosition, eased);
     camera.fov = THREE.MathUtils.lerp(motion.fov, fov, eased);
-    camera.updateProjectionMatrix();
+    camera.setViewOffset(size.width, size.height,
+      THREE.MathUtils.lerp(motion.offset.x, objectFrame?.offset.x ?? 0, eased) * size.width,
+      THREE.MathUtils.lerp(motion.offset.y, objectFrame?.offset.y ?? 0, eased) * size.height,
+      size.width, size.height);
     target.current.lerpVectors(motion.target, lookTarget, eased);
     camera.lookAt(target.current);
-    if (mode === "entering" && progress === 1 && !roomNotified.current) {
+    if ((mode === "entering" || mode === "returning") && progress === 1 && !roomNotified.current) {
       roomNotified.current = true;
       onRoomReady();
     }
-    if (computerOpen && !notified.current && progress === 1) {
+    if (activeSection && !notified.current && progress === 1) {
       notified.current = true;
-      onComputerReady();
+      onViewReady(activeSection);
     }
-    if (computerOpen && computerSurface.current && size.width > 700) {
+    if (computerOpen && computerSurface.current && size.width > 760 && size.height > 540) {
       camera.updateMatrixWorld();
-      cornerA.set(-0.34, 0.575, -2.589).project(camera);
-      cornerB.set(0.34, 0.145, -2.589).project(camera);
+      cornerA.set(deskItems.monitor.x - 0.34, 0.575, -2.589).project(camera);
+      cornerB.set(deskItems.monitor.x + 0.34, 0.145, -2.589).project(camera);
       const style = computerSurface.current.style;
       style.setProperty("--screen-left", `${(cornerA.x + 1) * size.width / 2}px`);
       style.setProperty("--screen-top", `${(1 - cornerA.y) * size.height / 2}px`);
