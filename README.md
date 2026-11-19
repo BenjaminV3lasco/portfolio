@@ -27,7 +27,10 @@ También agregué un **Modo Clásico** para ver el contenido de forma más direc
 
 - Escena 3D low poly con texturas pixeladas de pared, madera, piso y tela, e iluminación suave.
 - Objetos interactivos con tooltip, hover y brillo suave.
+- Teléfono con doce teclas: se iluminan al pasar el mouse o enfocarlas con el teclado y reproducen un tono corto al pulsarlas. Respetan el control de efectos de sonido.
+- Placa de desarrollo, servidor pequeño y taza con un detalle de código.
 - Paneles con estilo de videojuego.
+- Acercamiento progresivo a los objetos de las secciones y regreso animado a la habitación. Los paneles se abren al llegar, dejando el objeto centrado a un lado o arriba en el celular. El osito conserva solamente su sonido.
 - Modo clásico con tabs.
 - Música ambiente opcional.
 - Efectos de sonido diferenciados, con control independiente de la música y preferencia guardada.
@@ -62,6 +65,7 @@ src/
   components/
     RetroRoom.jsx
     ProjectComputer.jsx
+    FocusedPanel.jsx
     SkillsTree.jsx
     AcademicMap.jsx
     ConnectionMap.jsx
@@ -69,6 +73,7 @@ src/
     RetroSelect.jsx
   data/
     portfolio.js
+    roomNavigation.js
     skillTree.js
     academic.js
 
@@ -89,6 +94,14 @@ dist/
 `src/components/RetroRoom.jsx` contiene la habitación 3D y todos los objetos: escritorio, PC, silla, persona, pizarra, teléfono, carpeta, sillón, osito, cuadros y demás props.
 
 `src/data/portfolio.js` guarda el contenido editable del portfolio: textos, experiencia laboral, proyectos, habilidades, educación, contacto y CV.
+
+`src/data/roomNavigation.js` define los encuadres de los objetos en coordenadas globales. `FocusedPanel.jsx` muestra el contenido después del acercamiento y permite volver con el botón de cierre o Escape. La PC conserva su escritorio dentro del monitor. Durante los recorridos no se pueden activar otros objetos.
+
+Los objetos se centran en el espacio libre junto al panel, sin cambiar el ángulo frontal para compensar su ancho. La nariz del osito solo reproduce el sonido, sin mover la cámara.
+
+Para comprobar los encuadres en diez resoluciones y la curva de movimiento: `node check-navigation.mjs`.
+
+`src/data/deskLayout.js` centraliza las ubicaciones y medidas del escritorio. `node check-desk.mjs` verifica separaciones, límites de la mesa y la distribución de las teclas del teléfono. `PhoneKeypad.jsx` coloca los botones accesibles sobre las teclas 3D; Contacto permite usarlos sin cerrar el panel.
 
 `src/data/skillTree.js` organiza las habilidades por rutas. `SkillsTree.jsx` agrega las conexiones entre rutas; son relaciones de aprendizaje y uso, no requisitos obligatorios.
 
